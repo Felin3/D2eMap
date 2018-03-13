@@ -1524,6 +1524,7 @@ var CAMPAIGNS = [
 		['Labyrinth of Ruin','LoR'],
 		['The Trollfens','TF'],
 		['Shadow of Nerekhall','SoN'],
+		['Manor of Ravens','MoR'],
 		['Mists of Bilehall','MoB'],
 		['The Chains That Rust','CTR'],
 		['H&M Collections','HM']
