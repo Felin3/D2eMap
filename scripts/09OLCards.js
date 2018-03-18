@@ -158,7 +158,7 @@ function getOverlordCards() {
 //				//Select text and send to Clipboard
 //				textZone.select();
 //				document.execCommand("Copy");
-//				alert("Copied the text to Clipboard: \n" + textZone.val());
+				alert("Copied the text to Clipboard: \n" + temporaryText);
 			}
 
 
