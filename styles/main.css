@@ -422,6 +422,13 @@ img.relic-image {
 	cursor: pointer;
 }
 
+.overlord-cards-class {
+	display: block;
+	padding: 5px;
+	float: left;
+	min-height: 400px;
+}
+
 .dropdown-menu>li>a {
 	cursor: pointer;
 }
@@ -446,6 +453,13 @@ img.relic-image {
     margin-right: 10px;
     margin-bottom: 25px;
     max-height: 300px;
+}
+
+.expansions-group {
+	display: block;
+	padding: 5px;
+	float: left;
+	min-height: 200px;
 }
 
 #tinyUrl {

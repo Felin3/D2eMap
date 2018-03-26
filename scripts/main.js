@@ -82,6 +82,7 @@ function updateOption(element, value, isMonster) {
 			container.find('input[name="xs-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="ally-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="familiar-x"]').attr('value',selectedCoordinate);
+			container.find('input[name="villager-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="objective-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="lieutenant-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="monster-x-size"]').attr('value',selectedSize);
@@ -98,6 +99,7 @@ function updateOption(element, value, isMonster) {
 			container.find('input[name="xs-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="ally-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="familiar-y"]').attr('value',selectedCoordinate);
+			container.find('input[name="villager-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="objective-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="lieutenant-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="monster-y-size"]').attr('value',selectedSize);
@@ -129,7 +131,13 @@ function clearDirection(element) {
 
 function createConditionSelectContent() {
 	var html = addOption('Remove condition', '', 'removeCondition(this);');
+	var switched = CONDITIONS[CONDITIONS_LIST[0]].hasConditionCard;
 	for (var i = 0; i < CONDITIONS_LIST.length; i++) {
+		if (switched != CONDITIONS[CONDITIONS_LIST[i]].hasConditionCard)
+		{
+			switched = CONDITIONS[CONDITIONS_LIST[i]].hasConditionCard;
+			html += '<li role="separator" class="divider"></li>';
+		}
 		html += addOption(CONDITIONS_LIST[i] + ' ', '', 'updateCondition(this, \'' + CONDITIONS_LIST[i] + '\')');
 	}
 	return html;
@@ -139,7 +147,7 @@ function addConditions(conditions, container) {
 	for (var condition in conditions) {
 		if (condition == undefined || condition == '' || !CONDITIONS[condition].hasConditionCard) continue;
 		var conditionImage = $('<img>');
-		conditionImage.attr('src', 'images/conditions_cards/' + urlize(condition) + '.jpg').addClass('condition');
+		conditionImage.attr('src', 'images/conditions_cards/' + urlize(condition) + '.png').addClass('condition');
 		container.append(conditionImage);
 	}
 }
@@ -240,12 +248,14 @@ function rebuildMap(element, mapNb) {
 	config.monsters = mapConfig.monsters;
 	config.lieutenants = mapConfig.lieutenants;
 	config.allies = mapConfig.allies;
+	config.villagers = mapConfig.villagers;
 	config.actOne = mapConfig.actOne;
 	config.questObjectives = mapConfig.questObjectives;
 	config.monsterTraits = mapConfig.monsterTraits;
 
 	clearMapControlTab();
 	clearAllies();
+	clearVillagers();
 	clearLieutenants();
 	clearQuestObjectives();
 
@@ -255,6 +265,7 @@ function rebuildMap(element, mapNb) {
 	constructMonstersAndLieutenantsTabFromConfig();
 	constructMapControlsTabFromConfig();
 	constructAlliesTabFromConfig();
+	constructVillagersTabFromConfig();
 	if (mapConfig.objectives != undefined) {
 		config.objectives = mapConfig.objectives;
 		clearMiscellaneousObjectsTab();
@@ -484,6 +495,30 @@ function constructMapFromConfig() {
 		addConditionsToImage(familiarObject, familiar.conditions);
 		addMapObject(familiar.x, familiar.y, familiarObject, z_index);
         figures.append(familiarObject);
+	}
+
+	for (var i = 0; config.villagers != undefined && i < config.villagers.length; i++) {
+		var villager = config.villagers[i];
+		var villagerObject = $('<div>');
+		var villagerImage = $('<img>');
+		var folder = 'images/familiars_tokens/';
+		var z_index = 1;
+		villagerObject.css({
+			'position' : 'absolute',
+			'left' : (villager.x * cellSize).toString() + 'px',
+			'top' : (villager.y * cellSize).toString() + 'px',
+			'z-index' : z_index
+		});
+		villagerImage.attr('src', folder + urlize(villager.title) + '.png');
+		villagerObject.append(villagerImage);
+		if (villager.hp != undefined && villager.hp != '') {
+			var villagerHp = $('<div>').addClass('hit-points');
+			villagerHp.html(villager.hp.toString());
+			villagerObject.append(villagerHp);
+		}
+		addConditionsToImage(villagerObject, villager.conditions);
+		addMapObject(villager.x, villager.y, villagerObject, z_index);
+        figures.append(villagerObject);
 	}
 
 	for (var i = 0; config.monsters != undefined && i < config.monsters.length; i++) {
@@ -772,6 +807,7 @@ function collectData() {
 	config.xs = getXs();
 	config.allies = getAllies();
 	config.familiars = getFamiliars();
+	config.villagers = getVillagers();
 	config.objectives = getObjectives();
 	config.overlord = {};
 	config.overlord.cards = getOverlordCards();
@@ -815,11 +851,11 @@ function setShortLink() {
 	for (var i = 0; i < charCnt; i += 1) {
 		string += characters[Math.floor(Math.random() * characters.length)];
 	}
-	uri = 'http://tinyurl.com/create.php?source=indexpage&url=' + encodeURIComponent(location.href) + '&alias=' + string;
+	uri = 'https://tinyurl.com/create.php?source=indexpage&url=' + encodeURIComponent(location.href) + '&alias=' + string;
 	$('body').append('<img src="' + uri + '" style="height: 1px; width: 1px; position: absolute; z-index: -999; opacity: 0;" />');
 	var tinyUrl = $('#tinyUrl');
-    tinyUrl.html('Tiny link: http://tinyurl.com/' + string);
-    tinyUrl.attr('href', 'http://tinyurl.com/' + string);
+    tinyUrl.html('Tiny link: https://tinyurl.com/' + string);
+    tinyUrl.attr('href', 'https://tinyurl.com/' + string);
 }
 
 function getMapHash() {
@@ -891,6 +927,7 @@ function rotateMap(clockwise) {
 	rotateHeroes(clockwise, realWidth, realHeight);
 	rotateAllies(clockwise, realWidth, realHeight);
 	rotateFamiliars(clockwise, realWidth, realHeight);
+	rotateVillagers(clockwise, realWidth, realHeight);
 	rotateObjectives(clockwise, realWidth, realHeight);
 	constructMapFromConfig();
 	clearAdditionalElements();
@@ -1022,6 +1059,14 @@ function rotateFamiliars(clockwise, realWidth, realHeight) {
 	}
 }
 
+function rotateVillagers(clockwise, realWidth, realHeight) {
+	for (var i = 0; i < config.villagers.length; i++) {
+		var villager = config.villagers[i];
+		var height = 1, width = 1;
+		rotateObject(clockwise, villager, height, width, realHeight, realWidth);
+	}
+}
+
 function rotateObjectives(clockwise, realWidth, realHeight) {
 	for (var i = 0; i < config.objectives.length; i++) {
 		var objective = config.objectives[i];
@@ -1139,4 +1184,9 @@ $(function() {
 	$('#map').click(function() {
 		switchToMap();
 	});
+    $(document).keyup(function(e) {
+        if (e.keyCode == 27) { // esc keycode
+			switchToMap();
+        }
+    });
 });

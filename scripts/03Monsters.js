@@ -58,8 +58,8 @@ function addMonsterLine() {
 	var monsterLine = $('<div>').attr('id','monster' + monsterNumber.toString());
 	monsterNumber += 1;
 	addUnitLine(monsterLine, 'monster');
-	monsterLine.append($('<button type="button" class="btn btn-warning" aria-expanded="false" onclick="addCondition(this);">Add condition</button>'));
-	monsterLine.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove row</button>'));
+	monsterLine.append($('<button type="button" class="btn btn-warning" aria-expanded="false" onclick="addCondition(this);">Add token</button>'));
+	monsterLine.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove monster</button>'));
 	monsterLine.append($('<input type="hidden" name="master" value=""/>'));
 	monsterLine.append($('<input type="hidden" name="monster-y-size" value=""/>'));
 	monsterLine.append($('<input type="hidden" name="monster-x-size" value=""/>'));
@@ -119,11 +119,11 @@ function adjustMonsterList() {
 		var monster = monsterList[i];
 		if (monster == '') continue;
 		var monsterCard = $('<img>');
-		monsterCard.attr('src', 'images/monster_cards/' + urlize(monster) + actAddition + '.jpg');
+		monsterCard.attr('src', 'images/monster_cards/' + urlize(monster) + actAddition + '.png');
 		monsterCardsContainer.append(monsterCard);
 		if (MONSTERS[monster].hasBack) {
 			var monsterCardBack = $('<img>');
-			monsterCardBack.attr('src', 'images/monster_cards/' + urlize(monster) + '_back' + actAddition + '.jpg');
+			monsterCardBack.attr('src', 'images/monster_cards/' + urlize(monster) + '_back' + actAddition + '.png');
 			monsterCardsContainer.append(monsterCardBack);
 		}
 	}
@@ -170,7 +170,7 @@ function addLieutenantLine() {
 	lieutenant.append($('<input type="hidden" name="lieutenant-direction" value=""/>'));
 	lieutenant.find('.select-direction ul').append(createDirectionSelectContent());
 	lieutenant.append($('<button type="button" class="btn btn-info" aria-expanded="false" onclick="addRelic(this);">Add relic</button>'));
-	lieutenant.append($('<button type="button" class="btn btn-warning" aria-expanded="false" onclick="addCondition(this);">Add condition</button>'));
+	lieutenant.append($('<button type="button" class="btn btn-warning" aria-expanded="false" onclick="addCondition(this);">Add token</button>'));
 	lieutenant.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove row</button>'));
 	lieutenant.append($('<br/>'));
 	lieutenant.append($('<img src="" style="display: none;">').addClass('lieutenant-image'));
@@ -209,10 +209,9 @@ function updateLieutenant(element, value, showBack) {
 	}
 	var actAcronym = '_act';
 	var cardFolder = isAgent ? 'plot_cards/agents' : 'lieutenant_cards';
-	var cardImageExtension = isAgent ? '.png' : '.jpg';
-	container.find('img.lieutenant-image').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + cardImageExtension).css('display','inline-block');
+	container.find('img.lieutenant-image').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '.png').css('display','inline-block');
 	if (showBack) {
-		container.find('img.lieutenant-image-back').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '_back' + cardImageExtension).css('display','inline-block');
+		container.find('img.lieutenant-image-back').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '_back' + '.png').css('display','inline-block');
 	} else {
 		container.find('img.lieutenant-image-back').css('display','none');
 	}
@@ -249,7 +248,7 @@ function updateOverlordRelic(element, value) {
 		relicImage = $('<img>').addClass('relic-image').attr('id', 'relic-image-' + relicNumber.toString());
 		container.append(relicImage);
 	}
-	relicImage.attr('src', 'images/items_cards/relic/overlord/' + urlize(value) + '.jpg');
+	relicImage.attr('src', 'images/items_cards/relic/overlord/' + urlize(value) + '.png');
 }
 
 function removeOverlordRelic(element) {
@@ -324,7 +323,7 @@ function createMonsterTraitsBlock() {
 	for (var i = 0; i < MONSTER_TRAITS.length; i++) {
 		var monsterTrait = MONSTER_TRAITS[i];
 		var traitObject = $('<div>').addClass('checkbox');
-		traitObject.append($('<img src="images/monster_traits/' + urlize(monsterTrait) + '.jpg"/>'));
+		traitObject.append($('<img src="images/monster_traits/' + urlize(monsterTrait) + '.png"/>'));
 		var traitInput = $('<input type="checkbox" name="' + urlize(monsterTrait) + '" onClick="updateMonstersVisibility();" />');
 		traitInput.prop('checked', true);
 		traitObject.append($('<label></label>').append(traitInput));
@@ -350,14 +349,23 @@ function updateTraits() {
 
 function createExpansionsBlock() {
 	var html = $('#expansions');
-	for (var i = 0; i < EXPANSIONS.length; i++) {
-		var expansion = EXPANSIONS[i];
-		var expansionObject = $('<div>').addClass('checkbox');
-		var expansionInput = $('<input type="checkbox" name="' + folderize(expansion) + '" onClick="updateMonstersVisibility();" />');
-		expansionInput.prop('checked', true);
-		expansionObject.append($('<label> ' + expansion + '</label>').prepend(expansionInput));
-		html.append(expansionObject);
+	for (var expansionGroup in EXPANSION_GROUPS) {
+		if (EXPANSION_GROUPS[expansionGroup] == undefined) continue;
+		var GroupHTML = $('<div>').addClass('expansions-group');
+		GroupHTML.append("<b>"+expansionGroup+"</b>");
+		var expansionList = EXPANSION_GROUPS[expansionGroup];
+
+		for (var i = 0; i < expansionList.length; i++) {
+			var expansion = expansionList[i];
+			var expansionObject = $('<div>').addClass('checkbox');
+			var expansionInput = $('<input type="checkbox" name="' + folderize(expansion) + '" onClick="updateMonstersVisibility();" />');
+			expansionInput.prop('checked', true);
+			expansionObject.append($('<label> ' + expansion + '</label>').prepend(expansionInput));
+			GroupHTML.append(expansionObject);
+		}
+		html.append(GroupHTML);
 	}
+
 	return html;
 }
 
