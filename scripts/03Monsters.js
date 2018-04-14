@@ -1,3 +1,43 @@
+function InitializeWindowFor_Monsters() {
+	var html = $('#monsters');
+	html.append('<button type="button" class="btn btnActI" aria-expanded="false" onclick="SwitchAct();">Act I</button>');
+	html.append('<div id="monsters-cards"></div>');
+	html.append('<div id="monsters-container"></div>');
+	html.append('<div id="lieutenants-container"></div>');
+
+	var ActChoice = $('<div>');
+	ActChoice.addClass('radio');
+	ActChoice.append('<label><input type="radio" name="act" value="one" id="actOne" checked onclick="adjustAct();"> Act One Monsters</label>');
+	ActChoice.append('<label><input type="radio" name="act" value="two" id="actTwo" onclick="adjustAct();"> Act Two Monsters</label>');
+
+	html.append(ActChoice);
+
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMonsterLine();">Add monster row</button>');
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addLieutenantLine();">Add lieutenant or agent row</button>');
+	html.append('<div id="monster-traits"></div>');
+	html.append('<div id="expansions"></div>');
+}
+
+function SwitchAct()
+{
+	var ActButton = $('.btnActI');
+	if (ActButton.length == 0) {
+		ActButton = $('.btnActII');
+		ActButton.removeClass('btnActII');
+		ActButton.addClass('btnActI');
+		ActButton.html('Act I');
+		actOne = true;
+	}
+	else
+	{
+		ActButton.removeClass('btnActI');
+		ActButton.addClass('btnActII');
+		ActButton.html('Act II');
+		actOne = false;
+	}
+	adjustMonsterList();
+
+}
 
 function constructMonstersAndLieutenantsTabFromConfig() {
 	removeMonsterRows();

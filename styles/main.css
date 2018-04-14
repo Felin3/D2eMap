@@ -63,6 +63,19 @@ html body {
 	z-index: 200;
 }
 
+.btnActI {
+    color: #fff;
+    background-color: #504c96;
+    border-color: #4c47b3;
+    margin: 5;
+}
+.btnActII {
+    color: #fff;
+    background-color: #8b5531;
+    border-color: #b05d25;
+    margin: 5;
+}
+
 .oneCell,
 .twoCells,
 .threeCells,

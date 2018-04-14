@@ -11,6 +11,15 @@ function addOption(title, optionClass, functionCallback, additionalAttribute, at
 	return '<li class="' + optionClass + '"' + (additionalAttribute != undefined ? ' ' + additionalAttribute + '="' + attributeValue + '"' : '') + '><a onclick="' + functionCallback + '">' + title + '</a></li>';
 }
 
+function addTextareaWithLabel(labelText, link) {
+	var html;
+	html = '<label for="' + link +'">' + labelText + '</label>'
+	html += '<textarea class="form-control" rows="5" id="' + link +'"></textarea>'
+	return html;
+}
+
+
+
 function updateCoordinate(element, value) {
 	updateOption(element, value, false);
 }
@@ -58,6 +67,9 @@ function updateOption(element, value, isMonster) {
 			xYSelects = otherElementThanCleared;
 			value = container.find('.monster-title').html();
 			value = value.substring(0, value.length - 1);
+			//remove type : master / minion
+			value = value.replace(" master", "");
+			value = value.replace(" minion", "");
 		}
 
 		var firstClass = SHOWING_CLASSES[MONSTERS[value].width];
@@ -83,7 +95,7 @@ function updateOption(element, value, isMonster) {
 			container.find('input[name="ally-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="familiar-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="villager-x"]').attr('value',selectedCoordinate);
-			container.find('input[name="objective-x"]').attr('value',selectedCoordinate);
+			container.find('input[name="maptoken-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="lieutenant-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="monster-x-size"]').attr('value',selectedSize);
 			container.find('.x-title').html($(element).html() + ' ');
@@ -100,7 +112,7 @@ function updateOption(element, value, isMonster) {
 			container.find('input[name="ally-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="familiar-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="villager-y"]').attr('value',selectedCoordinate);
-			container.find('input[name="objective-y"]').attr('value',selectedCoordinate);
+			container.find('input[name="maptoken-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="lieutenant-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="monster-y-size"]').attr('value',selectedSize);
 			if (!parent.hasClass('squared')) {
@@ -130,7 +142,7 @@ function clearDirection(element) {
 }
 
 function createConditionSelectContent() {
-	var html = addOption('Remove condition', '', 'removeCondition(this);');
+	var html = addOption('Remove token', '', 'removeCondition(this);');
 	var switched = CONDITIONS[CONDITIONS_LIST[0]].hasConditionCard;
 	for (var i = 0; i < CONDITIONS_LIST.length; i++) {
 		if (switched != CONDITIONS[CONDITIONS_LIST[i]].hasConditionCard)
@@ -281,7 +293,7 @@ function clearHeroesConditions() {
 }
 
 function addCondition(button) {
-	var condition = $(createInputSelect('Select condition', 'condition-title', 'select-condition')).attr('id', 'condition' + conditionNumber.toString());
+	var condition = $(createInputSelect('Select token', 'condition-title', 'select-condition')).attr('id', 'condition' + conditionNumber.toString());
 	condition.find('ul').append(createConditionSelectContent());
 	var buttonObject = $(button);
 	buttonObject.before(condition);
@@ -292,13 +304,14 @@ function addCondition(button) {
 
 function addUnitLine(line, title) {
 	line.addClass('select-row');
-	line.append(createInputSelect('Select ' + title, title.toLowerCase() + '-title', 'select-' + title.toLowerCase()));
+
+	line.append(createInputSelect('Select ' + title, folderize(title).toLowerCase() + '-title', 'select-' + folderize(title).toLowerCase()));
 	line.append(createInputSelect('Select X coordinate', 'x-title', 'select-x'));
 	line.append(createInputSelect('Select Y coordinate', 'y-title', 'select-y'));
-	line.append($('<input type="text" name="' + title.toLowerCase() + '-hp" class="form-control" placeholder="Set HP" value=""/>'));
-	line.append($('<input type="hidden" name="' + title.toLowerCase() + '-title" value=""/>'));
-	line.append($('<input type="hidden" name="' + title.toLowerCase() + '-x" value=""/>'));
-	line.append($('<input type="hidden" name="' + title.toLowerCase() + '-y" value=""/>'));
+	line.append($('<input type="text" name="' + folderize(title).toLowerCase() + '-hp" class="form-control" placeholder="Set HP" value=""/>'));
+	line.append($('<input type="hidden" name="' + folderize(title).toLowerCase() + '-title" value=""/>'));
+	line.append($('<input type="hidden" name="' + folderize(title).toLowerCase() + '-x" value=""/>'));
+	line.append($('<input type="hidden" name="' + folderize(title).toLowerCase() + '-y" value=""/>'));
 }
 
 function addHpInput(element) {
@@ -1152,6 +1165,11 @@ function dropToken(target, data) {
 
 $(function() {
 //	LoadSubScripts();
+
+	InitializeWindowFor_QuestObjectives();
+	InitializeWindowFor_MapControls();
+	InitializeWindowFor_MapTokens();
+	InitializeWindowFor_Monsters();
 
 	addMonsterLine();
 	for (var i = 1; i <= 4; i++) {

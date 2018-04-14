@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <html>
 	<head>
-		<link href="styles/main.css" rel="stylesheet" type="text/css"/>
 		<script src="scripts/jquery.min.js"></script>
 		<link rel="stylesheet" href="styles/bootstrap.min.css">
+		<link href="styles/main.css" rel="stylesheet" type="text/css"/>
 		<script src="scripts/bootstrap.min.js"></script>
 		<script src="scripts/base_functions.js"></script>
 		<script src="scripts/constants.js"></script>
@@ -32,7 +32,7 @@
 				<li role="presentation"><a href="#hero4" aria-controls="messages" role="tab" data-toggle="tab"><img src="images/heroes_tokens/unknown.png"/></a></li>
 				<li role="presentation" class="no-border-radius"><a href="#familiars" aria-controls="messages" role="tab" data-toggle="tab""><img src="images/familiars_tokens/reanimate.png"/></a></li>
 				<li role="presentation" class="no-border-radius"><a href="#overlord" aria-controls="messages" role="tab" data-toggle="tab"><img src="images/overlord_cards/overlord_back.png" height="64px"/></a></li>
-				<li role="presentation"><a href="#misc" aria-controls="settings" role="tab" data-toggle="tab"><img src="images/misc/unknown.png"/></a></li>
+				<li role="presentation"><a href="#map-tokens" aria-controls="settings" role="tab" data-toggle="tab"><img src="images/misc/unknown.png"/></a></li>
 				<li role="presentation"><a href="#plot" aria-controls="settings" role="tab" data-toggle="tab"><img src="images/plot_deck_icon.png"/></a></li>
 			</ul>
 
@@ -61,38 +61,9 @@
 						<div class="figures"></div>
 					</div>
 				</div>
-				<div role="tabpanel" class="tab-pane" id="quest-objectives">
-					<label for="heroes-victory">Heroes victory conditions:</label>
-					<textarea class="form-control" rows="5" id="heroes-victory"></textarea>
-					<label for="overlord-victory">Overlord victory conditions:</label>
-					<textarea class="form-control" rows="5" id="overlord-victory"></textarea>
-					<label for="current-status">Current quest status:</label>
-					<textarea class="form-control" rows="5" id="current-status"></textarea>
-					<label for="reinforcements">Reinforcements:</label>
-					<textarea class="form-control" rows="5" id="reinforcements"></textarea>
-				</div>
-				<div role="tabpanel" class="tab-pane" id="map-controls">
-					<div id="full-maps-container"><h1>Full maps</h1></div>
-					<div id="tiles-container"><h1>Map tiles</h1></div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMapTileLine();">Add map tile</button>
-					<div id="doors-container"><h1>Doors</h1></div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addDoorLine();">Add door</button>
-					<div id="xs-container"><h1>Xs</h1></div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addXsLine();">Add X</button>
-				</div>
-				<div role="tabpanel" class="tab-pane" id="monsters">
-					<div id="monsters-cards"></div>
-					<div id="monsters-container"></div>
-					<div id="lieutenants-container"></div>
-					<div class="radio">
-						<label><input type="radio" name="act" value="one" id="actOne" checked onclick="adjustAct();"> Act One Monsters</label>
-						<label><input type="radio" name="act" value="two" id="actTwo" onclick="adjustAct();"> Act Two Monsters</label>
-					</div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMonsterLine();">Add monster row</button>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addLieutenantLine();">Add lieutenant or agent row</button>
-					<div id="monster-traits"></div>
-					<div id="expansions"></div>
-				</div>
+				<div role="tabpanel" class="tab-pane" id="quest-objectives"></div>
+				<div role="tabpanel" class="tab-pane" id="map-controls"></div>
+				<div role="tabpanel" class="tab-pane" id="monsters"></div>
 				<div role="tabpanel" class="tab-pane" id="hero1"></div>
 				<div role="tabpanel" class="tab-pane" id="hero2"></div>
 				<div role="tabpanel" class="tab-pane" id="hero3"></div>
@@ -114,10 +85,7 @@
 						<button type="button" class="btn btn-success" aria-expanded="false" onclick="HashOverlordDeck();">Random Sort For HASH</button>
 					</div>
 				</div>
-				<div role="tabpanel" class="tab-pane" id="misc">
-					<div id="objective-container"><h1>Tokens</h1></div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addObjectiveLine();">Add token</button>
-				</div>
+				<div role="tabpanel" class="tab-pane" id="map-tokens"></div>
 				<div role="tabpanel" class="tab-pane" id="plot">
 					<!-- empty -->
 				</div>

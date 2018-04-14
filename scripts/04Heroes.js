@@ -107,7 +107,10 @@ function createClassSelectContent(hybrid) {
 	for (var i = 0; i < ARCHETYPES_LIST.length; i++) {
 		for (var j = 0; j < ARCHETYPES_LIST[i].classes.length; j++) {
 			var title = ARCHETYPES_LIST[i].classes[j].title;
-			html += addOption(title + ' ', ARCHETYPES_LIST[i].title, 'updateClass(this, \'' + title + '\', false, ' + hybrid.toString() + ');');
+			if (hybrid == false || CLASSES[title].allowHybrid != true)
+			{
+				html += addOption(title + ' ', ARCHETYPES_LIST[i].title, 'updateClass(this, \'' + title + '\', false, ' + hybrid.toString() + ');');
+			}
 		}
 	}
 	return html;
@@ -169,6 +172,8 @@ function clearClass(element, hyrbid) {
 	var container = $(element).parents('.select-row');
 	container.find(hyrbid ? '.hybrid-class-title' : '.class-title').html('Select class ');
 	container.find('input[name="hybrid-class-title"]').attr('value','');
+
+	clearSkills(element);
 }
 
 function addAura(button) {
@@ -274,6 +279,19 @@ function adjustSkills(element, value, hybrid) {
 	}
 }
 
+function clearSkills(element) {
+	var container = $(element).parents('.select-row');
+	container.find('.skills-container').attr("class", "showclass skills-container");
+	container.find('.hybrid-class-title').html('Select class ');
+	container.find('input[name="hybrid-class-title"]').attr('value','');
+
+	clearSkillsImages(element);
+
+	clearBothHands(element);
+	clearArmor(element);
+	clearItem(element);
+}
+
 function adjustSkillsImages(element, hybrid) {
 	if (hybrid == undefined) hybrid = false;
 	var container = $(element).parents('.select-row');
@@ -282,7 +300,7 @@ function adjustSkillsImages(element, hybrid) {
 	clearSkillsImages(element);
 
 	adjustSkillsImagesForOneClass(element, className);
-	if (CLASSES[className].allowHybrid && hybrid) {
+	if (CLASSES[className].allowHybrid || hybrid) {
 		var classNameHybrid = container.find('input[name="hybrid-class-title"]').attr('value');
 		if (classNameHybrid == '') return;
 		adjustSkillsImagesForOneClass(element, classNameHybrid);
