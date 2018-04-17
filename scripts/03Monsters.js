@@ -1,46 +1,70 @@
 function InitializeWindowFor_Monsters() {
 	var html = $('#monsters');
-	html.append('<button type="button" class="btn btnActI" aria-expanded="false" onclick="SwitchAct();">Act I</button>');
-	html.append('<div id="monsters-cards"></div>');
-	html.append('<div id="monsters-container"></div>');
-	html.append('<div id="lieutenants-container"></div>');
+
+	var CurrentAct = "II";
+	var SwitchToAct = "I";
+	if (actOne == true)
+	{
+		CurrentAct = "I";
+		SwitchToAct = "II";
+	}
 
 	var ActChoice = $('<div>');
-	ActChoice.addClass('radio');
-	ActChoice.append('<label><input type="radio" name="act" value="one" id="actOne" checked onclick="adjustAct();"> Act One Monsters</label>');
-	ActChoice.append('<label><input type="radio" name="act" value="two" id="actTwo" onclick="adjustAct();"> Act Two Monsters</label>');
-
+	ActChoice.addClass('SelectAct');
+	ActChoice.append('<input type="image" src="images/Misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
 	html.append(ActChoice);
 
+	html.append('<div id="monsters-cards"></div>');
+	html.append('<div id="monsters-container"></div>');
 	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMonsterLine();">Add monster row</button>');
-	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addLieutenantLine();">Add lieutenant or agent row</button>');
-	html.append('<div id="monster-traits"></div>');
+	html.append('<div id="lieutenants-container"></div>');
+	html.append('\n<button type="button" class="btn btn-success" aria-expanded="false" onclick="addLieutenantLine();">Add lieutenant row</button>');
+	html.append('\n<div id="agents-container"></div>');
+	html.append('\n<button type="button" class="btn btn-success" aria-expanded="false" onclick="addAgentLine();">Add agent row</button>');
+	html.append('\n<div id="monster-traits"></div>');
 	html.append('<div id="expansions"></div>');
 }
 
 function SwitchAct()
 {
-	var ActButton = $('.btnActI');
-	if (ActButton.length == 0) {
-		ActButton = $('.btnActII');
-		ActButton.removeClass('btnActII');
-		ActButton.addClass('btnActI');
-		ActButton.html('Act I');
-		actOne = true;
-	}
-	else
-	{
-		ActButton.removeClass('btnActI');
-		ActButton.addClass('btnActII');
-		ActButton.html('Act II');
-		actOne = false;
-	}
-	adjustMonsterList();
+	var html = $('#monsters');
 
+	var CurrentAct = "II";
+	var SwitcToAct = "I";
+	if (actOne == true)
+	{
+		CurrentAct = "I";
+		SwitcToAct = "II";
+	}
+
+	var ActImg = $('.ImgAct' + CurrentAct);
+	ActImg.removeClass('ImgAct' + CurrentAct);
+	ActImg.addClass('ImgAct' + SwitcToAct);
+	var ActImgSrc = ActImg.attr('src');
+	ActImgSrc = ActImgSrc.replace('Act' + SwitcToAct, 'Act' + CurrentAct)
+	ActImg.attr('src', ActImgSrc);
+	actOne = !actOne;
+
+	adjustMonsterList();
 }
 
 function constructMonstersAndLieutenantsTabFromConfig() {
 	removeMonsterRows();
+
+	if (config.actOne != undefined) {
+		var CurrentAct = "II";
+		var SwitchToAct = "I";
+		if (actOne == true)
+		{
+			CurrentAct = "I";
+			SwitchToAct = "II";
+		}
+
+		var ActChoice = $('.SelectAct');
+		ActChoice.find(':image').remove();
+		ActChoice.append('<input type="image" src="images/Misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
+	}
+
 	if (config.monsters != undefined) {
 		for (var i = 0; i < config.monsters.length; i++) {
 			var monster = config.monsters[i];
@@ -341,6 +365,107 @@ function getLieutenants() {
 function clearLieutenants() {
 	$('#lieutenants-container .select-row').remove();
 }
+
+
+
+function addAgentLine() {
+	var agent = $('<div>');
+	addUnitLine(agent, 'Agent');
+
+	agent.find('.select-agent ul').append(createAgentsSelectContent());
+	agent.find('.select-x ul').addClass('showOneCell').append(createXSelectContent(true));
+	agent.find('.select-y ul').addClass('showOneCell').append(createYSelectContent(true));
+	agent.find('.select-agent').after(createInputSelect('Select direction', 'direction-title', 'select-direction'));
+	agent.append($('<input type="hidden" name="agent-direction" value=""/>'));
+	agent.find('.select-direction ul').append(createDirectionSelectContent());
+	agent.append($('<button type="button" class="btn btn-info" aria-expanded="false" onclick="addRelic(this);">Add relic</button>'));
+	agent.append($('<button type="button" class="btn btn-warning" aria-expanded="false" onclick="addCondition(this);">Add token</button>'));
+	agent.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove row</button>'));
+	agent.append($('<br/>'));
+	agent.append($('<img src="" style="display: none;">').addClass('agent-image'));
+	agent.append($('<img src="" style="display: none;">').addClass('agent-image-back'));
+	$('#agents-container').append(agent);
+	return agent;
+}
+
+function createAgentsSelectContent() {
+	var html = addOption('Clear', '', 'clearAgent(this);');
+	for (var i = 0; i < LIEUTENANTS_LIST.length; i++) {
+		if (LIEUTENANTS_LIST[i][0].indexOf('act') != -1 || LIEUTENANTS_LIST[i][0].indexOf('Act') != -1) {
+			continue;
+		}
+		var agentTitle = 'Agent ' + LIEUTENANTS_LIST[i][0];
+		html += addOption(agentTitle + ' ', '', 'updateAgent(this, \'' + agentTitle + '\', ' + LIEUTENANTS_LIST[i][1].toString() + ')');
+	}
+	return html;
+}
+
+function updateAgent(element, value, showBack) {
+	var container = $(element).parents('.select-row');
+	var isAgent = value.indexOf('Agent') >= 0;
+	var realName = value.replace('Agent ', '');
+	container.find('.agent-title').html(value + ' ');
+	container.find('input[name="agent-title"]').attr('value',value);
+	if (isAgent) {
+		container.addClass('agent');
+	} else {
+		container.removeClass('agent');
+	}
+	var actAcronym = '_act';
+	var cardFolder = isAgent ? 'plot_cards/agents' : 'lieutenant_cards';
+	container.find('img.agent-image').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '.png').css('display','inline-block');
+	if (showBack) {
+		container.find('img.agent-image-back').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '_back' + '.png').css('display','inline-block');
+	} else {
+		container.find('img.agent-image-back').css('display','none');
+	}
+	container.find('[agent="' + value + '"] input[type="checkbox"]').parent().parent().css('display', 'block');
+}
+
+function clearAgent(element) {
+	var container = $(element).parents('.select-row');
+	container.find('.agent-title').html('Select Agent ');
+	container.find('input[name="agent-title"]').attr('value','');
+	container.find('img.agent-image').css('display','none');
+	container.find('img.agent-image-back').css('display','none');
+}
+
+function getAgents() {
+	var result = [];
+	var agents = $('#agents-container .select-row');
+	for (var i = 0; i < agents.length; i++) {
+		var container = $(agents[i]);
+		var agent = {};
+		agent.title = container.find('[name="agent-title"]').val();
+		agent.x = container.find('[name="agent-x"]').val();
+		agent.y = container.find('[name="agent-y"]').val();
+		agent.hp = container.find('[name="agent-hp"]').val();
+		agent.conditions = getConditions(container);
+		agent.hasBack = container.find('img.agent-image-back').css('display') != 'none';
+		agent.vertical = container.find('[name="agent-direction"]').val() == 'vertical';
+		agent.relics = [];
+		var relics = container.find('[name="relic-title"]');
+		for (var j = 0; j < relics.length; j++) {
+			agent.relics.push($(relics[j]).val());
+		}
+		agent.skills = [];
+		var skillCheckboxes = container.find('input[type="checkbox"]');
+		for (var k = 0; k < skillCheckboxes.length; k++) {
+			var skillCheckbox = $(skillCheckboxes[k]);
+			if (skillCheckbox.prop('checked')) {
+				agent.skills.push(skillCheckbox.attr('name'));
+			}
+		}
+		result.push(agent);
+	}
+	return result;
+}
+
+function clearAgents() {
+	$('#agents-container .select-row').remove();
+}
+
+
 
 function updateAct(actOne) {
 	var isActOne = actOne == undefined || actOne;

@@ -63,17 +63,57 @@ html body {
 	z-index: 200;
 }
 
+.SelectAct {
+    position: absolute;
+    top: 60px;
+    right: 17px;
+
+	border-radius: 16px;
+	width: 32px;
+	height: 32px;
+    overflow: hidden;
+
+/*
+display: block;
+	float: none;
+	margin: 20px;
+     border: 2px solid white; 
+   */
+
+}
+.btnActI, .btnActII, .btnActI.focus, .btnActI:hover, .btnActI:focus, .btnActII.focus, .btnActII:hover, .btnActII:focus {
+    color: #fff;
+}
 .btnActI {
     color: #fff;
     background-color: #504c96;
     border-color: #4c47b3;
-    margin: 5;
+    padding: 0;
 }
 .btnActII {
     color: #fff;
     background-color: #8b5531;
     border-color: #b05d25;
-    margin: 5;
+    padding: 0;
+}
+.btnActIb, .btnActIIb, .btnActIb.focus, .btnActIb:hover, .btnActIb:focus, .btnActIIb.focus, .btnActIIb:hover, .btnActIIb:focus {
+    color: #fff;
+}
+.btnActIb {
+    color: #fff;
+    background-color: #504c96;
+    border-color: #4c47b3;
+    padding: 0;
+}
+.btnActIIb {
+    color: #fff;
+    background-color: #8b5531;
+    border-color: #b05d25;
+    padding: 0;
+}
+.imgActI {
+}
+.imgActII {
 }
 
 .oneCell,
@@ -425,6 +465,8 @@ img.ally-image,
 img.ally-image-back,
 img.lieutenant-image,
 img.lieutenant-image-back,
+img.agent-image,
+img.agent-image-back,
 img.relic-image {
 	margin: 10px 10px 10px 0;
 	width: 200px;

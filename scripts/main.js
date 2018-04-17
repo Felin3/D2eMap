@@ -97,6 +97,7 @@ function updateOption(element, value, isMonster) {
 			container.find('input[name="villager-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="maptoken-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="lieutenant-x"]').attr('value',selectedCoordinate);
+			container.find('input[name="agent-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="monster-x-size"]').attr('value',selectedSize);
 			container.find('.x-title').html($(element).html() + ' ');
 			if (!parent.hasClass('squared')) {
@@ -114,6 +115,7 @@ function updateOption(element, value, isMonster) {
 			container.find('input[name="villager-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="maptoken-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="lieutenant-y"]').attr('value',selectedCoordinate);
+			container.find('input[name="agent-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="monster-y-size"]').attr('value',selectedSize);
 			if (!parent.hasClass('squared')) {
 				container.find('.select-x').removeClass(SHOWING_CLASSES[selectedSize]);
@@ -259,6 +261,7 @@ function rebuildMap(element, mapNb) {
 	config.xs = mapConfig.xs;
 	config.monsters = mapConfig.monsters;
 	config.lieutenants = mapConfig.lieutenants;
+	config.agents = mapConfig.agents;
 	config.allies = mapConfig.allies;
 	config.villagers = mapConfig.villagers;
 	config.actOne = mapConfig.actOne;
@@ -602,6 +605,29 @@ function constructMapFromConfig() {
         figures.append(lieutenantObject);
 	}
 
+	for (var i = 0; config.agents != undefined && i < config.agents.length; i++) {
+		var agent = config.agents[i];
+		var agentObject = $('<div>');
+		var agentImage = $('<img>');
+		var agentHp = $('<div>').addClass('hit-points');
+		agentHp.html(agent.hp.toString());
+		var folder = 'images/monster_tokens/';
+		var z_index = 2;
+		if (agent.vertical != undefined && agent.vertical) folder += 'vertical/';
+		agentObject.css({
+			'position' : 'absolute',
+			'left' : (agent.x * cellSize).toString() + 'px',
+			'top' : (agent.y * cellSize).toString() + 'px',
+			'z-index' : z_index
+		});
+		agentImage.attr('src', folder + urlize(agent.title.replace('Agent ', '')) + '.png');
+		agentObject.append(agentImage);
+		agentObject.append(agentHp);
+		addConditionsToImage(agentObject, agent.conditions);
+		addMapObject(agent.x, agent.y, agentObject, z_index);
+        figures.append(agentObject);
+	}
+
 	addHeroToMap(config.hero1);
 	addHeroToMap(config.hero2);
 	addHeroToMap(config.hero3);
@@ -825,6 +851,7 @@ function collectData() {
 	config.overlord = {};
 	config.overlord.cards = getOverlordCards();
 	config.lieutenants = getLieutenants();
+	config.agents = getAgents();
 	config.plot = getPlotInfo();
 	config.actOne = actOne;
 	config.mapWidth = mapWidth;
@@ -891,6 +918,7 @@ function clearAdditionalElements() {
 	clearHeroesSackAndSearchItems();
 	clearHeroesConditions();
 	clearLieutenants();
+	clearAgents();
 	clearFamiliarsAndAllies();
 }
 
@@ -937,6 +965,7 @@ function rotateMap(clockwise) {
 	rotateDoors(clockwise, realWidth, realHeight);
 	rotateMonsters(clockwise, realWidth, realHeight);
 	rotateLieutenants(clockwise, realWidth, realHeight);
+	rotateAgents(clockwise, realWidth, realHeight);
 	rotateHeroes(clockwise, realWidth, realHeight);
 	rotateAllies(clockwise, realWidth, realHeight);
 	rotateFamiliars(clockwise, realWidth, realHeight);
@@ -1042,6 +1071,25 @@ function rotateLieutenants(clockwise, realWidth, realHeight) {
 		}
 		lieutenant.vertical = !lieutenant.vertical;
 		rotateObject(clockwise, lieutenant, height, width, realHeight, realWidth);
+	}
+}
+
+function rotateAgents(clockwise, realWidth, realHeight) {
+	if (config.agents == undefined) {
+		return;
+	}
+	for (var i = 0; i < config.agents.length; i++) {
+		var agent = config.agents[i];
+		var height, width;
+		if (agent.vertical) {
+			height = LIEUTENANTS[agent.title].width;
+			width = LIEUTENANTS[agent.title].height;
+		} else {
+			height = LIEUTENANTS[agent.title].height;
+			width = LIEUTENANTS[agent.title].width;
+		}
+		agent.vertical = !agent.vertical;
+		rotateObject(clockwise, agent, height, width, realHeight, realWidth);
 	}
 }
 
