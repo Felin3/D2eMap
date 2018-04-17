@@ -11,7 +11,7 @@ function InitializeWindowFor_Monsters() {
 
 	var ActChoice = $('<div>');
 	ActChoice.addClass('SelectAct');
-	ActChoice.append('<input type="image" src="images/Misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
+	ActChoice.append('<input type="image" src="images/misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
 	html.append(ActChoice);
 
 	html.append('<div id="monsters-cards"></div>');
@@ -62,7 +62,7 @@ function constructMonstersAndLieutenantsTabFromConfig() {
 
 		var ActChoice = $('.SelectAct');
 		ActChoice.find(':image').remove();
-		ActChoice.append('<input type="image" src="images/Misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
+		ActChoice.append('<input type="image" src="images/misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
 	}
 
 	if (config.monsters != undefined) {
