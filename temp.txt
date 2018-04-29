@@ -1,0 +1,27 @@
+InitializeWindow 	-> create window with starting elements
+get			-> send data to config
+fill			-> recover data from config
+clear			-> empty/delete data (revert to Initialized state ?)
+
+create			-> create input zones
+
+addLine			-> add one empty line for the specified element
+
+set			-> launched when the user selects a value for a field (dropdown, checkbox, textbox)
+unset			-> remove previous 'set' value (most of the time it's labelled clear in dropdowns)
+update			-> update an element after a 'set' of another linked to this one
+add			-> add one of the specified element
+remove			-> remove one of the element
+
+exhaust
+flip
+SwitchAct
+
+
+
+
+
+
+
+transform: rotate(90deg)
+transform-origin : right

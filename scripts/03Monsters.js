@@ -1,68 +1,25 @@
 function InitializeWindowFor_Monsters() {
 	var html = $('#monsters');
 
-	var CurrentAct = "II";
-	var SwitchToAct = "I";
-	if (actOne == true)
-	{
-		CurrentAct = "I";
-		SwitchToAct = "II";
-	}
+	html.append(Create_ActButton());
 
-	var ActChoice = $('<div>');
-	ActChoice.addClass('SelectAct');
-	ActChoice.append('<input type="image" src="images/misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
-	html.append(ActChoice);
-
+	html.append('<div><h1>Monsters</h1></div>');
 	html.append('<div id="monsters-cards"></div>');
 	html.append('<div id="monsters-container"></div>');
 	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMonsterLine();">Add monster row</button>');
-	html.append('<div id="lieutenants-container"></div>');
-	html.append('\n<button type="button" class="btn btn-success" aria-expanded="false" onclick="addLieutenantLine();">Add lieutenant row</button>');
-	html.append('\n<div id="agents-container"></div>');
-	html.append('\n<button type="button" class="btn btn-success" aria-expanded="false" onclick="addAgentLine();">Add agent row</button>');
-	html.append('\n<div id="monster-traits"></div>');
+	html.append('<div id="lieutenants-container"><h1>Lieutenants</h1></div>');
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addLieutenantLine();">Add lieutenant row</button>');
+	html.append('<div id="agents-container"><h1>Agents</h1></div>');
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addAgentLine();">Add agent row</button>');
+	html.append('<div id="monster-traits"></div>');
 	html.append('<div id="expansions"></div>');
-}
-
-function SwitchAct()
-{
-	var html = $('#monsters');
-
-	var CurrentAct = "II";
-	var SwitcToAct = "I";
-	if (actOne == true)
-	{
-		CurrentAct = "I";
-		SwitcToAct = "II";
-	}
-
-	var ActImg = $('.ImgAct' + CurrentAct);
-	ActImg.removeClass('ImgAct' + CurrentAct);
-	ActImg.addClass('ImgAct' + SwitcToAct);
-	var ActImgSrc = ActImg.attr('src');
-	ActImgSrc = ActImgSrc.replace('Act' + SwitcToAct, 'Act' + CurrentAct)
-	ActImg.attr('src', ActImgSrc);
-	actOne = !actOne;
-
-	adjustMonsterList();
 }
 
 function constructMonstersAndLieutenantsTabFromConfig() {
 	removeMonsterRows();
 
-	if (config.actOne != undefined) {
-		var CurrentAct = "II";
-		var SwitchToAct = "I";
-		if (actOne == true)
-		{
-			CurrentAct = "I";
-			SwitchToAct = "II";
-		}
-
-		var ActChoice = $('.SelectAct');
-		ActChoice.find(':image').remove();
-		ActChoice.append('<input type="image" src="images/misc/Act' + SwitchToAct + '.png" class="ImgAct' + CurrentAct + '" onclick="SwitchAct();" />');
+	if (config.currentAct != undefined) {
+		Fill_ActButton();
 	}
 
 	if (config.monsters != undefined) {
@@ -113,7 +70,26 @@ function constructMonstersAndLieutenantsTabFromConfig() {
 				var relicContainer = addRelic(container.find('[onclick="addRelic(this);"]'));
 				updateOverlordRelic(relicContainer.find('li')[0], lieutenant.relics[k]);
 			}
-//			adjustAlliesSkillsImages(container.children()[0]);
+		}
+	}
+
+	if (config.agents != undefined) {
+		for (var i = 0 ; i < config.agents.length; i++) {
+			var container = addAgentLine();
+			var agent = config.agents[i];
+			updateAgent(container.find('.select-agent li')[0], agent.title, agent.hasBack);
+			container.find('[name="agent-x"]').val(agent.x);
+			container.find('.x-title').html(getAlphabetChar(agent.x - 1) + ' ');
+			container.find('[name="agent-y"]').val(agent.y);
+			container.find('.y-title').html(agent.y.toString() + ' ');
+			container.find('[name="agent-hp"]').val(agent.hp);
+			var direction = agent.vertical == undefined || !agent.vertical ? 'horizontal' : 'vertical';
+			container.find('.direction-title').html(direction + ' ');
+			container.find('[name="agent-direction"]').val(direction);
+			for (var j = 0; agent.skills != undefined && j < agent.skills.length; j++) {
+				container.find('[name="' + agent.skills[j] + '"]').prop('checked', true);
+			}
+			updateConditionsInSettings(agent.conditions, container);
 		}
 	}
 }
@@ -178,7 +154,7 @@ function adjustMonsterList() {
 			monsterList.push(title);
 		}
 	}
-	var actAddition = actOne ? '_act1' : '_act2';
+	var actAddition = (CurrentAct == "I") ? '_act1' : '_act2';
 	for (var i = 0; i < monsterList.length; i++) {
 		var monster = monsterList[i];
 		if (monster == '') continue;
@@ -249,33 +225,17 @@ function createLieutenantsSelectContent() {
 		var lieutenantTitle = LIEUTENANTS_LIST[i][0];
 		html += addOption(lieutenantTitle + ' ', '', 'updateLieutenant(this, \'' + lieutenantTitle + '\', ' + LIEUTENANTS_LIST[i][1].toString() + ')');
 	}
-	html += '<li role="separator" class="divider"></li>';
-	for (var i = 0; i < LIEUTENANTS_LIST.length; i++) {
-		if (LIEUTENANTS_LIST[i][0].indexOf('act') != -1 || LIEUTENANTS_LIST[i][0].indexOf('Act') != -1) {
-			continue;
-		}
-		var lieutenantTitle = 'Agent ' + LIEUTENANTS_LIST[i][0];
-		html += addOption(lieutenantTitle + ' ', '', 'updateLieutenant(this, \'' + lieutenantTitle + '\', ' + LIEUTENANTS_LIST[i][1].toString() + ')');
-	}
 	return html;
 }
 
 function updateLieutenant(element, value, showBack) {
 	var container = $(element).parents('.select-row');
-	var isAgent = value.indexOf('Agent') >= 0;
-	var realName = value.replace('Agent ', '');
 	container.find('.lieutenant-title').html(value + ' ');
 	container.find('input[name="lieutenant-title"]').attr('value',value);
-	if (isAgent) {
-		container.addClass('agent');
-	} else {
-		container.removeClass('agent');
-	}
 	var actAcronym = '_act';
-	var cardFolder = isAgent ? 'plot_cards/agents' : 'lieutenant_cards';
-	container.find('img.lieutenant-image').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '.png').css('display','inline-block');
+	container.find('img.lieutenant-image').attr('src', 'images/lieutenant_cards/' + urlize(value) + actAcronym + ((CurrentAct == "I") ? '1' : '2') + '.png').css('display','inline-block');
 	if (showBack) {
-		container.find('img.lieutenant-image-back').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '_back' + '.png').css('display','inline-block');
+		container.find('img.lieutenant-image-back').attr('src', 'images/lieutenant_cards/' + urlize(value) + actAcronym + ((CurrentAct == "I") ? '1' : '2') + '_back' + '.png').css('display','inline-block');
 	} else {
 		container.find('img.lieutenant-image-back').css('display','none');
 	}
@@ -378,7 +338,6 @@ function addAgentLine() {
 	agent.find('.select-agent').after(createInputSelect('Select direction', 'direction-title', 'select-direction'));
 	agent.append($('<input type="hidden" name="agent-direction" value=""/>'));
 	agent.find('.select-direction ul').append(createDirectionSelectContent());
-	agent.append($('<button type="button" class="btn btn-info" aria-expanded="false" onclick="addRelic(this);">Add relic</button>'));
 	agent.append($('<button type="button" class="btn btn-warning" aria-expanded="false" onclick="addCondition(this);">Add token</button>'));
 	agent.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove row</button>'));
 	agent.append($('<br/>'));
@@ -402,20 +361,14 @@ function createAgentsSelectContent() {
 
 function updateAgent(element, value, showBack) {
 	var container = $(element).parents('.select-row');
-	var isAgent = value.indexOf('Agent') >= 0;
 	var realName = value.replace('Agent ', '');
 	container.find('.agent-title').html(value + ' ');
 	container.find('input[name="agent-title"]').attr('value',value);
-	if (isAgent) {
-		container.addClass('agent');
-	} else {
-		container.removeClass('agent');
-	}
+	container.addClass('agent');
 	var actAcronym = '_act';
-	var cardFolder = isAgent ? 'plot_cards/agents' : 'lieutenant_cards';
-	container.find('img.agent-image').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '.png').css('display','inline-block');
+	container.find('img.agent-image').attr('src', 'images/plot_cards/agents/' + urlize(realName) + actAcronym + ((CurrentAct == "I") ? '1' : '2') + '.png').css('display','inline-block');
 	if (showBack) {
-		container.find('img.agent-image-back').attr('src', 'images/' + cardFolder + '/' + urlize(realName) + actAcronym + (actOne ? '1' : '2') + '_back' + '.png').css('display','inline-block');
+		container.find('img.agent-image-back').attr('src', 'images/plot_cards/agents/' + urlize(realName) + actAcronym + ((CurrentAct == "I") ? '1' : '2') + '_back' + '.png').css('display','inline-block');
 	} else {
 		container.find('img.agent-image-back').css('display','none');
 	}
@@ -443,11 +396,6 @@ function getAgents() {
 		agent.conditions = getConditions(container);
 		agent.hasBack = container.find('img.agent-image-back').css('display') != 'none';
 		agent.vertical = container.find('[name="agent-direction"]').val() == 'vertical';
-		agent.relics = [];
-		var relics = container.find('[name="relic-title"]');
-		for (var j = 0; j < relics.length; j++) {
-			agent.relics.push($(relics[j]).val());
-		}
 		agent.skills = [];
 		var skillCheckboxes = container.find('input[type="checkbox"]');
 		for (var k = 0; k < skillCheckboxes.length; k++) {
@@ -465,18 +413,6 @@ function clearAgents() {
 	$('#agents-container .select-row').remove();
 }
 
-
-
-function updateAct(actOne) {
-	var isActOne = actOne == undefined || actOne;
-	$(isActOne ? '#actOne' : '#actTwo').prop('checked', true);
-	adjustAct();
-}
-
-function adjustAct() {
-	actOne = $('[name="act"]:checked').val() == 'one';
-	adjustMonsterList();
-}
 
 function updateTraitsAndExpansionsFromConfig() {
 	updateTraitsFromConfig();

@@ -18,6 +18,56 @@ function addTextareaWithLabel(labelText, link) {
 	return html;
 }
 
+function Create_ActButton()
+{
+	var DisplayAct = "II";
+	if (CurrentAct == "I")
+	{
+		DisplayAct = "I";
+	}
+
+	var html;
+	html = $('<div>').addClass('SelectAct');
+	html.append('<input type="image" src="images/Misc/Act' + DisplayAct + '.png" class="ImgAct" onclick="SwitchAct();" />');
+	return html;
+}
+
+function Fill_ActButton()
+{
+	var ActImg = $('.ImgAct');
+	var ActImgSrc = ActImg.attr('src');
+	ActImgSrc = ActImgSrc.replace('II','I');
+	ActImgSrc = ActImgSrc.replace('ActI', 'Act' + CurrentAct);
+	ActImg.attr('src', ActImgSrc);
+}
+
+function SwitchAct()
+{
+	var DisplayedAct = CurrentAct;
+	var SwitcToAct = "I";
+	if (CurrentAct == "I")
+	{
+		SwitcToAct = "II";
+	}
+
+	var ActImg = $('.ImgAct');
+	var ActImgSrc = ActImg.attr('src');
+	ActImgSrc = ActImgSrc.replace('Act' + DisplayedAct, 'Act' + SwitcToAct)
+	ActImg.attr('src', ActImgSrc);
+
+	//new current Act
+	CurrentAct = SwitcToAct;
+
+	adjustMonsterList();
+	Update_EncounterList();
+}
+
+function updateAct(NewAct) {
+	CurrentAct = NewAct;
+	Fill_ActButton();
+	adjustMonsterList();
+}
+
 
 
 function updateCoordinate(element, value) {
@@ -37,16 +87,16 @@ function updateOption(element, value, isMonster) {
 		if (isMonster) {
 			var monsterHp;
 			if (monsterTitle.indexOf('master') > -1) {
-				if (actOne) {
-					monsterHp = MONSTERS[value].masterHpActOne;
+				if (CurrentAct == "I") {
+					monsterHp = MONSTERS[value].masterHpI;
 				} else {
-					monsterHp = MONSTERS[value].masterHpActTwo;
+					monsterHp = MONSTERS[value].masterHpII;
 				}
 			} else {
-				if (actOne) {
-					monsterHp = MONSTERS[value].minionHpActOne;
+				if (CurrentAct == "I") {
+					monsterHp = MONSTERS[value].minionHpI;
 				} else {
-					monsterHp = MONSTERS[value].minionHpActTwo;
+					monsterHp = MONSTERS[value].minionHpII;
 				}
 			}
 			container.find('.monster-title').html(monsterTitle + ' ');
@@ -257,17 +307,25 @@ function createDirectionSelectContent() {
 	return html;
 }
 
+function recoverConfig(Base64Data) {
+	var dataTemp = JSON.parse(Base64.decode(Base64Data));
+	//initialize values if needed
+	if (dataTemp.currentAct == undefined) {
+		dataTemp.currentAct = 'I';
+	}
+	return dataTemp;
+}
+
 function rebuildMap(element, mapNb) {
-	var mapConfig = JSON.parse(Base64.decode(MAP_HASES_LIST[mapNb][2]));
+	var mapConfig = recoverConfig(MAP_HASES_LIST[mapNb][3]);
 	config.tiles = mapConfig.tiles;
 	config.doors = mapConfig.doors;
 	config.xs = mapConfig.xs;
 	config.monsters = mapConfig.monsters;
 	config.lieutenants = mapConfig.lieutenants;
-	config.agents = mapConfig.agents;
 	config.allies = mapConfig.allies;
 	config.villagers = mapConfig.villagers;
-	config.actOne = mapConfig.actOne;
+	config.currentAct = mapConfig.currentAct;
 	config.questObjectives = mapConfig.questObjectives;
 	config.monsterTraits = mapConfig.monsterTraits;
 
@@ -278,7 +336,7 @@ function rebuildMap(element, mapNb) {
 	clearQuestObjectives();
 
 	fillQuestObjectives();
-	updateAct(config.actOne);
+	updateAct(config.currentAct);
 	updateTraitsFromConfig()
 	constructMonstersAndLieutenantsTabFromConfig();
 	constructMapControlsTabFromConfig();
@@ -600,7 +658,7 @@ function constructMapFromConfig() {
 			'top' : (lieutenant.y * cellSize).toString() + 'px',
 			'z-index' : z_index
 		});
-		lieutenantImage.attr('src', folder + urlize(lieutenant.title.replace('Agent ', '')) + '.png');
+		lieutenantImage.attr('src', folder + urlize(lieutenant.title) + '.png');
 		lieutenantObject.append(lieutenantImage);
 		lieutenantObject.append(lieutenantHp);
 		addConditionsToImage(lieutenantObject, lieutenant.conditions);
@@ -732,7 +790,7 @@ function adjustOverlappingImages() {
 }
 
 function constructSettingsFromConfig() {
-	updateAct(config.actOne);
+	updateAct(config.currentAct);
 	updateTraitsAndExpansionsFromConfig();
 	fillQuestObjectives();
 	constructHeroesTabsFromConfig();
@@ -829,10 +887,6 @@ function updateConfig() {
 	window.location.hash = Base64.encode(JSON.stringify(config));
 }
 
-function decodeConfig() {
-	config = JSON.parse(Base64.decode(window.location.hash));
-}
-
 function collectData() {
 	var monsterRows = $('#monsters-container .select-row');
 	config.monsters = [];
@@ -856,7 +910,7 @@ function collectData() {
 	config.lieutenants = getLieutenants();
 	config.agents = getAgents();
 	config.plot = getPlotInfo();
-	config.actOne = actOne;
+	config.currentAct = CurrentAct;
 	config.mapWidth = mapWidth;
 	config.mapHeight = mapHeight;
 	config.monsterTraits = monsterTraits;
@@ -899,15 +953,6 @@ function setShortLink() {
 	var tinyUrl = $('#tinyUrl');
     tinyUrl.html('Tiny link: https://tinyurl.com/' + string);
     tinyUrl.attr('href', 'https://tinyurl.com/' + string);
-}
-
-function getMapHash() {
-	var config2 = {};
-	config2.xs = config.xs;
-	config2.tiles = config.tiles;
-	config2.doors = config.doors;
-	config2.objectives = config.objectives;
-	console.log(Base64.encode(JSON.stringify(config2)));
 }
 
 function switchToMap() {
@@ -1221,27 +1266,28 @@ $(function() {
 	InitializeWindowFor_MapControls();
 	InitializeWindowFor_MapTokens();
 	InitializeWindowFor_Monsters();
+	InitializeWindowFor_Familiars();
+	InitializeWindowFor_OLCards();
 
 	addMonsterLine();
 	for (var i = 1; i <= 4; i++) {
 		addHeroLine(i);
 	}
-	createFullMapsBlock();
 	createFamiliarsImagesBlock();
 	createMonsterTraitsBlock();
 	createExpansionsBlock();
 	createOverlordCardsBlock();
 	createPlotDeckBlock();
+	// recover data / config
 	if (window.location.hash != "") {
-		decodeConfig();
-		constructSettingsFromConfig();
-		constructMapFromConfig();
+		//From URL
+		config = recoverConfig(window.location.hash);
 	} else {
-		//TEST
-		config = JSON.parse(Base64.decode(defaultConfig));
-		constructSettingsFromConfig();
-		constructMapFromConfig();
+		//From default config
+		config = recoverConfig(defaultConfig);
 	}
+	constructSettingsFromConfig();
+	constructMapFromConfig();
 	drawGrid();
 	setMapSizeFromConfig();
 

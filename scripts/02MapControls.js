@@ -1,25 +1,34 @@
 function InitializeWindowFor_MapControls() {
 	var html = $('#map-controls');
-	html.append('<div id="full-maps-container"><h1>Full maps</h1></div>');
+
+	html.append(Create_ActButton());
+
+	//pre-filled Maps zone
+	html.append(CreateZone_PreFilledMaps());
+
+	//tiles zone
 	html.append('<div id="tiles-container"><h1>Map tiles</h1></div>');
 	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMapTileLine();">Add map tile</button>');
+	//doors zone
 	html.append('<div id="doors-container"><h1>Doors</h1></div>');
 	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addDoorLine();">Add door</button>');
+	//Xs zone
 	html.append('<div id="xs-container"><h1>Xs</h1></div>');
 	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addXsLine();">Add X</button>');
 }
 
-function createFullMapsBlock() {
+//pre-filled Maps zone
+function CreateZone_PreFilledMaps() {
 	var html = $('<div>').addClass('full-maps-container');
-
+	html.append('<h1>Full maps</h1>');
 	html.append(createInputSelect('Select Campaign ', 'campaign-title', 'select-campaign'));
 	html.find('.select-campaign ul').addClass(ALL_CAMPAIGNS_CLASSES + ' showcampaign').append(createCampaignSelectContent());
 	html.append($('<input type="hidden" name="campaign-title" value=""/>'));
 
 	html.append(createInputSelect('Remove and replace current map with : Quest / Encounter ', 'encounter-title', 'select-encounter'));
-	html.find('.select-encounter ul').addClass(ALL_CAMPAIGNS_CLASSES + ' showcampaign').append(createEncounterSelectContent());
+	html.find('.select-encounter ul').addClass(ALL_CAMPAIGNS_CLASSES + ' showencounter').append(createEncounterSelectContent());
 
-	$('#full-maps-container').append(html);
+	return html;
 }
 
 function createCampaignSelectContent() {
@@ -28,6 +37,14 @@ function createCampaignSelectContent() {
 		var code = CAMPAIGNS[i][1];
 		var title = CAMPAIGNS[i][0];
 		html += addOption(title + ' ', code, 'updateCampaign(this, \'' + code + '\');');
+	}
+	return html;
+}
+
+function createEncounterSelectContent() {
+	var html = '';
+	for (var i = 0; i < MAP_HASES_LIST.length; i++) {
+		html += addOption(MAP_HASES_LIST[i][1] + ' ',MAP_HASES_LIST[i][0] + ' ' + 'Act' + MAP_HASES_LIST[i][2], 'rebuildMap(this, \'' + i + '\', false);');
 	}
 	return html;
 }
@@ -47,17 +64,35 @@ function clearCampaign(element) {
 	adjustEncounter(element, ALL_CAMPAIGNS_CLASSES);
 }
 
-function createEncounterSelectContent() {
-	var html = '';
-	for (var i = 0; i < MAP_HASES_LIST.length; i++) {
-		html += addOption(MAP_HASES_LIST[i][1] + ' ',MAP_HASES_LIST[i][0], 'rebuildMap(this, \'' + i + '\', false);');
-	}
-	return html;
-}
-
 function adjustEncounter(element, campaign) {
 	var container = $(element).parents('.full-maps-container');
-	container.find('.select-encounter ul').removeClass(ALL_CAMPAIGNS_CLASSES).addClass(campaign);
+	container.find('.select-encounter ul').removeClass(ALL_CAMPAIGNS_CLASSES).addClass(campaign).addClass('Act' + CurrentAct);
+}
+
+function Update_EncounterList() {
+	var container = $('.full-maps-container');
+	container.find('.select-encounter ul').removeClass(ALL_ACTS).addClass('Act' + CurrentAct);
+}
+
+//tiles zone
+
+function addMapTileLine() {
+	var mapTileLine = $('<div>');
+	addUnitLine(mapTileLine, 'tile');
+	mapTileLine.find('input[type="text"]').remove();
+	mapTileLine.find('.select-tile').after(createInputSelect('Select side', 'side-title', 'select-side'));
+	mapTileLine.append(createInputSelect('Select angle', 'angle-title', 'select-angle'));
+	mapTileLine.append($('<input type="hidden" name="tile-side" value=""/>'));
+	mapTileLine.append($('<input type="hidden" name="tile-angle" value=""/>'));
+
+	mapTileLine.find('.select-tile ul').append(createTileSelectContent());
+	mapTileLine.find('.select-side ul').append(createSideSelectContent());
+	mapTileLine.find('.select-x ul').addClass('showOneCell').append(createXSelectContent(true));
+	mapTileLine.find('.select-y ul').addClass('showOneCell').append(createYSelectContent(true));
+	mapTileLine.find('.select-angle ul').append(createAngleSelectContent());
+	mapTileLine.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove row</button>'));
+	$('#tiles-container').append(mapTileLine);
+	return mapTileLine;
 }
 
 function constructMapControlsTabFromConfig() {
@@ -100,25 +135,6 @@ function constructMapControlsTabFromConfig() {
 			container.find('.y-title').html(xs.y.toString() + ' ');
 		}
 	}
-}
-
-function addMapTileLine() {
-	var mapTileLine = $('<div>');
-	addUnitLine(mapTileLine, 'tile');
-	mapTileLine.find('input[type="text"]').remove();
-	mapTileLine.find('.select-tile').after(createInputSelect('Select side', 'side-title', 'select-side'));
-	mapTileLine.append(createInputSelect('Select angle', 'angle-title', 'select-angle'));
-	mapTileLine.append($('<input type="hidden" name="tile-side" value=""/>'));
-	mapTileLine.append($('<input type="hidden" name="tile-angle" value=""/>'));
-
-	mapTileLine.find('.select-tile ul').append(createTileSelectContent());
-	mapTileLine.find('.select-side ul').append(createSideSelectContent());
-	mapTileLine.find('.select-x ul').addClass('showOneCell').append(createXSelectContent(true));
-	mapTileLine.find('.select-y ul').addClass('showOneCell').append(createYSelectContent(true));
-	mapTileLine.find('.select-angle ul').append(createAngleSelectContent());
-	mapTileLine.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove row</button>'));
-	$('#tiles-container').append(mapTileLine);
-	return mapTileLine;
 }
 
 function createTileSelectContent() {

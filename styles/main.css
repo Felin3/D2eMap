@@ -81,40 +81,6 @@ display: block;
    */
 
 }
-.btnActI, .btnActII, .btnActI.focus, .btnActI:hover, .btnActI:focus, .btnActII.focus, .btnActII:hover, .btnActII:focus {
-    color: #fff;
-}
-.btnActI {
-    color: #fff;
-    background-color: #504c96;
-    border-color: #4c47b3;
-    padding: 0;
-}
-.btnActII {
-    color: #fff;
-    background-color: #8b5531;
-    border-color: #b05d25;
-    padding: 0;
-}
-.btnActIb, .btnActIIb, .btnActIb.focus, .btnActIb:hover, .btnActIb:focus, .btnActIIb.focus, .btnActIIb:hover, .btnActIIb:focus {
-    color: #fff;
-}
-.btnActIb {
-    color: #fff;
-    background-color: #504c96;
-    border-color: #4c47b3;
-    padding: 0;
-}
-.btnActIIb {
-    color: #fff;
-    background-color: #8b5531;
-    border-color: #b05d25;
-    padding: 0;
-}
-.imgActI {
-}
-.imgActII {
-}
 
 .oneCell,
 .twoCells,
@@ -133,6 +99,8 @@ display: block;
 .MoB,
 .CTR,
 .HM,
+.ActI
+.ActII
 .Custom,
 .checkbox.apothecary,
 .checkbox.disciple,
@@ -235,6 +203,29 @@ display: block;
 .showcampaign.HM .HM,
 .showcampaign.Custom .Custom,
 .showcampaign,
+.showencounter.TSR.ActI .TSR.ActI,
+.showencounter.TSR.ActII .TSR.ActII,
+.showencounter.Hob.ActI .Hob.ActI,
+.showencounter.Hob.ActII .Hob.ActII,
+.showencounter.LotW.ActI .LotW.ActI,
+.showencounter.LotW.ActII .LotW.ActII,
+.showencounter.LoR.ActI .LoR.ActI,
+.showencounter.LoR.ActII .LoR.ActII,
+.showencounter.TF.ActI .TF.ActI,
+.showencounter.TF.ActII .TF.ActII,
+.showencounter.SoN.ActI .SoN.ActI,
+.showencounter.SoN.ActII .SoN.ActII,
+.showencounter.MoR.ActI .MoR.ActI,
+.showencounter.MoR.ActII .MoR.ActII,
+.showencounter.MoB.ActI .MoB.ActI,
+.showencounter.MoB.ActII .MoB.ActII,
+.showencounter.CTR.ActI .CTR.ActI,
+.showencounter.CTR.ActII .CTR.ActII,
+.showencounter.HM.ActI .HM.ActI,
+.showencounter.HM.ActII .HM.ActII,
+.showencounter.Custom.ActI .Custom.ActI,
+.showencounter.Custom.ActII .Custom.ActII,
+.showencounter,
 .showarch.mage .mage,
 .showarch.warrior .warrior,
 .showarch.scout .scout,

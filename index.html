@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <html>
 	<head>
+		<link href="styles/main.css" rel="stylesheet" type="text/css" />
+		<link href="styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
+		<link href="styles/custom.css" rel="stylesheet" type="text/css" />
 		<script src="scripts/jquery.min.js"></script>
-		<link rel="stylesheet" href="styles/bootstrap.min.css">
-		<link href="styles/main.css" rel="stylesheet" type="text/css"/>
 		<script src="scripts/bootstrap.min.js"></script>
 		<script src="scripts/base_functions.js"></script>
 		<script src="scripts/constants.js"></script>
@@ -68,23 +69,8 @@
 				<div role="tabpanel" class="tab-pane" id="hero2"></div>
 				<div role="tabpanel" class="tab-pane" id="hero3"></div>
 				<div role="tabpanel" class="tab-pane" id="hero4"></div>
-				<div role="tabpanel" class="tab-pane" id="familiars">
-					<div id="allies-container"><h1>Allies</h1></div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addAllyLine();">Add Ally</button>
-					<div id="familiars-container"><h1>Familiars</h1></div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addFamiliarLine();">Add Familiar</button>
-					<div id="villagers-container"><h1>Villagers</h1></div>
-					<button type="button" class="btn btn-success" aria-expanded="false" onclick="addVillagerLine();">Add Villager</button>
-				</div>
-				<div role="tabpanel" class="tab-pane" id="overlord">
-					<div id="overlord-container">
-						<h1>Overlord available cards</h1>
-						<button type="button" class="btn btn-success" aria-expanded="false" onclick="clearOverlordDeck();">Reset deck</button>
-						<button type="button" class="btn btn-success" aria-expanded="false" onclick="selectBasicOverlordDeck();">Basic I</button>
-						<button type="button" class="btn btn-success" aria-expanded="false" onclick="selectBasic2OverlordDeck();">Basic II</button>
-						<button type="button" class="btn btn-success" aria-expanded="false" onclick="HashOverlordDeck();">Random Sort For HASH</button>
-					</div>
-				</div>
+				<div role="tabpanel" class="tab-pane" id="familiars"></div>
+				<div role="tabpanel" class="tab-pane" id="overlord"></div>
 				<div role="tabpanel" class="tab-pane" id="map-tokens"></div>
 				<div role="tabpanel" class="tab-pane" id="plot">
 					<!-- empty -->
