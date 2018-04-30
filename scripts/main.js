@@ -28,7 +28,7 @@ function Create_ActButton()
 
 	var html;
 	html = $('<div>').addClass('SelectAct');
-	html.append('<input type="image" src="images/Misc/Act' + DisplayAct + '.png" class="ImgAct" onclick="SwitchAct();" />');
+	html.append('<input type="image" src="images/misc/Act' + DisplayAct + '.png" class="ImgAct" onclick="SwitchAct();" />');
 	return html;
 }
 
@@ -59,7 +59,7 @@ function SwitchAct()
 	CurrentAct = SwitcToAct;
 
 	adjustMonsterList();
-	Update_EncounterList();
+	UpdateWindow_MapControls();
 }
 
 function updateAct(NewAct) {
@@ -329,7 +329,7 @@ function rebuildMap(element, mapNb) {
 	config.questObjectives = mapConfig.questObjectives;
 	config.monsterTraits = mapConfig.monsterTraits;
 
-	clearMapControlTab();
+	ResetWindow_MapControls();
 	clearAllies();
 	clearVillagers();
 	clearLieutenants();
@@ -348,7 +348,7 @@ function rebuildMap(element, mapNb) {
 		constructMiscellaneousObjectsTabFromConfig();
 	}
 	switchToMap();
-	clearCampaign(element);
+	UnSet_Campaign(element);
 }
 
 function clearHeroesConditions() {
@@ -961,7 +961,7 @@ function switchToMap() {
 }
 
 function clearAdditionalElements() {
-	clearMapControlTab();
+	ResetWindow_MapControls();
 	clearMiscellaneousObjectsTab();
 	clearHeroesSackAndSearchItems();
 	clearHeroesConditions();

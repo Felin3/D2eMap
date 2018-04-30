@@ -1,82 +1,101 @@
 function InitializeWindowFor_MapControls() {
 	var html = $('#map-controls');
 
+	//Act Button
 	html.append(Create_ActButton());
 
 	//pre-filled Maps zone
 	html.append(CreateZone_PreFilledMaps());
-
 	//tiles zone
-	html.append('<div id="tiles-container"><h1>Map tiles</h1></div>');
-	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMapTileLine();">Add map tile</button>');
+	html.append(CreateZone_Tiles());
 	//doors zone
-	html.append('<div id="doors-container"><h1>Doors</h1></div>');
-	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addDoorLine();">Add door</button>');
+	html.append(CreateZone_Doors());
 	//Xs zone
-	html.append('<div id="xs-container"><h1>Xs</h1></div>');
-	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addXsLine();">Add X</button>');
+	html.append(CreateZone_Xs());
+}
+
+function ResetWindow_MapControls() {
+	ResetZone_Tiles();
+	ResetZone_Doors();
+	ResetZone_Xs();
+}
+
+function UpdateWindow_MapControls() {
+	Update_EncounterList('', CurrentAct);
 }
 
 //pre-filled Maps zone
 function CreateZone_PreFilledMaps() {
 	var html = $('<div>').addClass('full-maps-container');
 	html.append('<h1>Full maps</h1>');
-	html.append(createInputSelect('Select Campaign ', 'campaign-title', 'select-campaign'));
-	html.find('.select-campaign ul').addClass(ALL_CAMPAIGNS_CLASSES + ' showcampaign').append(createCampaignSelectContent());
-	html.append($('<input type="hidden" name="campaign-title" value=""/>'));
-
-	html.append(createInputSelect('Remove and replace current map with : Quest / Encounter ', 'encounter-title', 'select-encounter'));
-	html.find('.select-encounter ul').addClass(ALL_CAMPAIGNS_CLASSES + ' showencounter').append(createEncounterSelectContent());
-
+	html.append(Create_CampaignList());
+	html.append(Create_EncounterList());
 	return html;
 }
 
-function createCampaignSelectContent() {
-	var html = addOption('Clear', '', 'clearCampaign(this);');
+function Create_CampaignList() {
+	var html = createInputSelect('Select Campaign ', 'campaign-title', 'select-campaign');
+	html.find('ul').addClass('showcampaign ' + ALL_CAMPAIGNS_CLASSES);
+	html.find('ul').append(addOption('Clear', '', 'UnSet_Campaign(this,\'\');'));
 	for (var i = 0; i < CAMPAIGNS.length; i++) {
 		var code = CAMPAIGNS[i][1];
 		var title = CAMPAIGNS[i][0];
-		html += addOption(title + ' ', code, 'updateCampaign(this, \'' + code + '\');');
+		html.find('ul').append(addOption(title + ' ', code, 'Set_Campaign(this, \'' + code + '\');'));
 	}
+	html.append($('<input type="hidden" name="campaign-title" value=""/>'));
 	return html;
 }
 
-function createEncounterSelectContent() {
-	var html = '';
+function Create_EncounterList() {
+	var html = createInputSelect('Remove and replace current map with : Quest / Encounter ', 'encounter-title', 'select-encounter');
+	html.find('ul').addClass('showencounter ' + ALL_CAMPAIGNS_CLASSES + ' ' + ALL_ACTS);
 	for (var i = 0; i < MAP_HASES_LIST.length; i++) {
-		html += addOption(MAP_HASES_LIST[i][1] + ' ',MAP_HASES_LIST[i][0] + ' ' + 'Act' + MAP_HASES_LIST[i][2], 'rebuildMap(this, \'' + i + '\', false);');
+		html.find('ul').append(addOption(MAP_HASES_LIST[i][1] + ' ',MAP_HASES_LIST[i][0] + ' ' + 'Act' + MAP_HASES_LIST[i][2], 'rebuildMap(this, \'' + i + '\', false);'));
 	}
 	return html;
 }
 
-function updateCampaign(element, value) {
+function Set_Campaign(element, value) {
 	var container = $(element).parents('.full-maps-container');
 	container.find('.campaign-title').html(element.innerText + ' ');
 	container.find('input[name="campaign-title"]').attr('value',value);
-	adjustEncounter(element, value);
+	Update_EncounterList(value, CurrentAct);
 }
 
-function clearCampaign(element) {
+function UnSet_Campaign(element, value) {
 	var container = $(element).parents('.full-maps-container');
 	container.find('.select-campaign ul').addClass(ALL_CAMPAIGNS_CLASSES);
 	container.find('.campaign-title').html('Select campaign ');
-	container.find('input[name="campaign-title"]').attr('value','');
-	adjustEncounter(element, ALL_CAMPAIGNS_CLASSES);
+	container.find('input[name="campaign-title"]').attr('value',value);
+	Update_EncounterList(ALL_CAMPAIGNS_CLASSES, ALL_ACTS);
 }
 
-function adjustEncounter(element, campaign) {
-	var container = $(element).parents('.full-maps-container');
-	container.find('.select-encounter ul').removeClass(ALL_CAMPAIGNS_CLASSES).addClass(campaign).addClass('Act' + CurrentAct);
-}
-
-function Update_EncounterList() {
+function Update_EncounterList(campaign, act) {
 	var container = $('.full-maps-container');
-	container.find('.select-encounter ul').removeClass(ALL_ACTS).addClass('Act' + CurrentAct);
+	if (campaign != '') {
+		container.find('.select-encounter ul').removeClass(ALL_CAMPAIGNS_CLASSES).addClass(campaign);
+	}
+	if (act == "I" || act == "II") {
+		act = 'Act' + act;
+	}
+	container.find('.select-encounter ul').removeClass(ALL_ACTS).addClass(act);
 }
 
 //tiles zone
+function CreateZone_Tiles() {
+	var html = $('<div>');
+	var container = $('<div>').addClass('tiles-container');
+	container.append('<h1>Map tiles</h1>');
+	html.append(container);
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="AddLine_Tile();">Add map tile</button>');
+	return html;
+}
 
-function addMapTileLine() {
+function ResetZone_Tiles() {
+	$('.tiles-container .select-row').remove();
+}
+
+function AddLine_Tile() {
 	var mapTileLine = $('<div>');
 	addUnitLine(mapTileLine, 'tile');
 	mapTileLine.find('input[type="text"]').remove();
@@ -85,63 +104,34 @@ function addMapTileLine() {
 	mapTileLine.append($('<input type="hidden" name="tile-side" value=""/>'));
 	mapTileLine.append($('<input type="hidden" name="tile-angle" value=""/>'));
 
-	mapTileLine.find('.select-tile ul').append(createTileSelectContent());
+	mapTileLine.find('.select-tile ul').append(Create_TileListValues());
 	mapTileLine.find('.select-side ul').append(createSideSelectContent());
 	mapTileLine.find('.select-x ul').addClass('showOneCell').append(createXSelectContent(true));
 	mapTileLine.find('.select-y ul').addClass('showOneCell').append(createYSelectContent(true));
 	mapTileLine.find('.select-angle ul').append(createAngleSelectContent());
 	mapTileLine.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove row</button>'));
-	$('#tiles-container').append(mapTileLine);
+	$('.tiles-container').append(mapTileLine);
 	return mapTileLine;
 }
 
-function constructMapControlsTabFromConfig() {
-	if (config.tiles != undefined) {
-		for (var i = 0 ; i < config.tiles.length; i++) {
-			var container = addMapTileLine();
-			var tile = config.tiles[i];
-			updateTile(container.find('.select-tile li')[0], tile.title);
-			updateSide(container.find('.select-side li')[0], tile.side);
-			container.find('[name="tile-x"]').val(tile.x);
-			container.find('.x-title').html(getAlphabetChar(tile.x - 1) + ' ');
-			container.find('[name="tile-y"]').val(tile.y);
-			container.find('.y-title').html(tile.y.toString() + ' ');
-			updateAngle(container.find('.select-angle li')[0], tile.angle);
-		}
-	}
-	if (config.doors != undefined) {
-		for (var i = 0 ; i < config.doors.length; i++) {
-			var container = addDoorLine();
-			var door = config.doors[i];
-			updateDoor(container.find('.select-door li')[0], door.title);
-			updateDirection(container.find('.select-direction li')[0], door.vertical ? 'vertical' : 'horizontal');
-			if (door.opened != undefined) {
-				container.find('[name="opened"]').prop('checked', door.opened);
-			}
-			container.find('[name="door-x"]').val(door.x);
-			container.find('.x-title').html(getAlphabetChar(door.x - 1) + ' ');
-			container.find('[name="door-y"]').val(door.y);
-			container.find('.y-title').html(door.y.toString() + ' ');
-		}
-	}
-	if (config.xs != undefined) {
-		for (var i = 0 ; i < config.xs.length; i++) {
-			var container = addXsLine();
-			var xs = config.xs[i];
-			updateXs(container.find('.select-xs li')[0], xs.title);
-			container.find('[name="xs-x"]').val(xs.x);
-			container.find('.x-title').html(getAlphabetChar(xs.x - 1) + ' ');
-			container.find('[name="xs-y"]').val(xs.y);
-			container.find('.y-title').html(xs.y.toString() + ' ');
-		}
-	}
-}
-
-function createTileSelectContent() {
+function Create_TileListValues() {
 	var html = addOption('Clear', '', 'clearTile(this);');
 	for (var i = 0; i < MAP_TILES_LIST.length; i++) {
 		html += addOption(MAP_TILES_LIST[i] + ' ', '', 'updateTile(this, \'' + MAP_TILES_LIST[i] + '\')');
 	}
+	return html;
+}
+
+function Create_CampaignList222222222222222222222222222222222222222222222222222222222222222222222222() {
+	var html = createInputSelect('Select Campaign ', 'campaign-title', 'select-campaign');
+	html.find('ul').addClass('showcampaign ' + ALL_CAMPAIGNS_CLASSES);
+	html.find('ul').append(addOption('Clear', '', 'UnSet_Campaign(this,\'\');'));
+	for (var i = 0; i < CAMPAIGNS.length; i++) {
+		var code = CAMPAIGNS[i][1];
+		var title = CAMPAIGNS[i][0];
+		html.find('ul').append(addOption(title + ' ', code, 'Set_Campaign(this, \'' + code + '\');'));
+	}
+	html.append($('<input type="hidden" name="campaign-title" value=""/>'));
 	return html;
 }
 
@@ -197,9 +187,51 @@ function clearAngle(element) {
 	container.find('input[name="tile-angle"]').attr('value','');
 }
 
+function constructMapControlsTabFromConfig() {
+	if (config.tiles != undefined) {
+		for (var i = 0 ; i < config.tiles.length; i++) {
+			var container = AddLine_Tile();
+			var tile = config.tiles[i];
+			updateTile(container.find('.select-tile li')[0], tile.title);
+			updateSide(container.find('.select-side li')[0], tile.side);
+			container.find('[name="tile-x"]').val(tile.x);
+			container.find('.x-title').html(getAlphabetChar(tile.x - 1) + ' ');
+			container.find('[name="tile-y"]').val(tile.y);
+			container.find('.y-title').html(tile.y.toString() + ' ');
+			updateAngle(container.find('.select-angle li')[0], tile.angle);
+		}
+	}
+	if (config.doors != undefined) {
+		for (var i = 0 ; i < config.doors.length; i++) {
+			var container = addDoorLine();
+			var door = config.doors[i];
+			updateDoor(container.find('.select-door li')[0], door.title);
+			updateDirection(container.find('.select-direction li')[0], door.vertical ? 'vertical' : 'horizontal');
+			if (door.opened != undefined) {
+				container.find('[name="opened"]').prop('checked', door.opened);
+			}
+			container.find('[name="door-x"]').val(door.x);
+			container.find('.x-title').html(getAlphabetChar(door.x - 1) + ' ');
+			container.find('[name="door-y"]').val(door.y);
+			container.find('.y-title').html(door.y.toString() + ' ');
+		}
+	}
+	if (config.xs != undefined) {
+		for (var i = 0 ; i < config.xs.length; i++) {
+			var container = addXsLine();
+			var xs = config.xs[i];
+			updateXs(container.find('.select-xs li')[0], xs.title);
+			container.find('[name="xs-x"]').val(xs.x);
+			container.find('.x-title').html(getAlphabetChar(xs.x - 1) + ' ');
+			container.find('[name="xs-y"]').val(xs.y);
+			container.find('.y-title').html(xs.y.toString() + ' ');
+		}
+	}
+}
+
 function getMapTiles() {
 	var result = [];
-	var tiles = $('#tiles-container .select-row');
+	var tiles = $('.tiles-container .select-row');
 	for (var i = 0; i < tiles.length; i++) {
 		var container = $(tiles[i]);
 		var tile = {};
@@ -211,6 +243,19 @@ function getMapTiles() {
 		result.push(tile);
 	}
 	return result;
+}
+//doors zone
+function CreateZone_Doors() {
+	var html = $('<div>');
+	var container = $('<div>').addClass('doors-container');
+	container.append('<h1>Doors</h1>');
+	html.append(container);
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addDoorLine();">Add door</button>');
+	return html;
+}
+
+function ResetZone_Doors() {
+	$('.doors-container .select-row').remove();
 }
 
 function addDoorLine() {
@@ -273,6 +318,20 @@ function getDoors() {
 	return result;
 }
 
+//Xs zone
+function CreateZone_Xs() {
+	var html = $('<div>');
+	var container = $('<div>').addClass('xs-container');
+	container.append('<h1>Xs</h1>');
+	html.append(container);
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addXsLine();">Add X</button>');
+	return html;
+}
+
+function ResetZone_Xs() {
+	$('.xs-container .select-row').remove();
+}
+
 function addXsLine() {
 	var xLine = $('<div>');
 	addUnitLine(xLine, 'Xs');
@@ -318,11 +377,5 @@ function getXs() {
 		result.push(x);
 	}
 	return result;
-}
-
-function clearMapControlTab() {
-	$('#tiles-container .select-row').remove();
-	$('#doors-container .select-row').remove();
-	$('#xs-container .select-row').remove();
 }
 
