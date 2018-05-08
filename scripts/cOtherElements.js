@@ -17,14 +17,13 @@ function Fill_ActButton()
 {
 	var ActImg = $('.ImgAct');
 	var ActImgSrc = ActImg.attr('src');
-	ActImgSrc = ActImgSrc.replace('II','I');
+	ActImgSrc = ActImgSrc.replace('ActII','ActI');
 	ActImgSrc = ActImgSrc.replace('ActI', 'Act' + CurrentAct);
 	ActImg.attr('src', ActImgSrc);
 }
 
 function SwitchAct()
 {
-	var DisplayedAct = CurrentAct;
 	var SwitcToAct = "I";
 	if (CurrentAct == "I")
 	{
@@ -33,7 +32,7 @@ function SwitchAct()
 
 	var ActImg = $('.ImgAct');
 	var ActImgSrc = ActImg.attr('src');
-	ActImgSrc = ActImgSrc.replace('Act' + DisplayedAct, 'Act' + SwitcToAct)
+	ActImgSrc = ActImgSrc.replace('Act' + CurrentAct, 'Act' + SwitcToAct)
 	ActImg.attr('src', ActImgSrc);
 
 	//new current Act
@@ -48,4 +47,3 @@ function updateAct(NewAct) {
 	Fill_ActButton();
 	adjustMonsterList();
 }
-

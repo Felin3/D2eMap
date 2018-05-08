@@ -1,7 +1,3 @@
-function createSelect(title) {
-	return '<div class="btn-group select-x showOneCell showTwoCells"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">' + title + ' <span class="caret"></span></button><ul class="dropdown-menu" role="menu"></ul></div>';
-}
-
 function addOptionOld(title, value, optionClass) {
 	return '<option class="' + optionClass + '" value="' + value + '">' + title + '</option>';
 }
@@ -90,7 +86,7 @@ function updateOption(element, value, isMonster) {
 		if (parent.hasClass('select-x')) {
 			container.find('input[name="monster-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="hero-x"]').attr('value',selectedCoordinate);
-			container.find('input[name="tile-x"]').attr('value',selectedCoordinate);
+			container.find('input[name="line-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="door-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="xs-x"]').attr('value',selectedCoordinate);
 			container.find('input[name="ally-x"]').attr('value',selectedCoordinate);
@@ -108,7 +104,7 @@ function updateOption(element, value, isMonster) {
 			container.find('.y-title').html($(element).html() + ' ');
 			container.find('input[name="monster-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="hero-y"]').attr('value',selectedCoordinate);
-			container.find('input[name="tile-y"]').attr('value',selectedCoordinate);
+			container.find('input[name="line-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="door-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="xs-y"]').attr('value',selectedCoordinate);
 			container.find('input[name="ally-y"]').attr('value',selectedCoordinate);
@@ -281,13 +277,13 @@ function rebuildMap(element, mapNb) {
 	clearAllies();
 	clearVillagers();
 	clearLieutenants();
-	clearQuestObjectives();
+	Clear_QuestObjectives();
 
-	fillQuestObjectives();
+	FillWindow_QuestObjectives();
 	updateAct(config.currentAct);
 	updateTraitsFromConfig()
 	constructMonstersAndLieutenantsTabFromConfig();
-	constructMapControlsTabFromConfig();
+	FillWindow_MapControls();
 	constructAlliesTabFromConfig();
 	constructVillagersTabFromConfig();
 	if (mapConfig.objectives != undefined) {
@@ -445,6 +441,14 @@ function constructMapFromConfig() {
 			'top' : (door.y * cellSize).toString() + 'px'
 		});
 		if (door.vertical) {
+			doorImage.css({
+				'-ms-transform' : 'rotate(90deg)',
+				'-webkit-transform' : 'rotate(90deg)',
+				'transform' : 'rotate(90deg)',
+				'transform-origin' : cellSize.toString() + 'px'
+			});
+		}
+		if (door.direction == "V") {
 			doorImage.css({
 				'-ms-transform' : 'rotate(90deg)',
 				'-webkit-transform' : 'rotate(90deg)',
@@ -740,10 +744,10 @@ function adjustOverlappingImages() {
 function constructSettingsFromConfig() {
 	updateAct(config.currentAct);
 	updateTraitsAndExpansionsFromConfig();
-	fillQuestObjectives();
+	FillWindow_QuestObjectives();
 	constructHeroesTabsFromConfig();
 	constructMonstersAndLieutenantsTabFromConfig();
-	constructMapControlsTabFromConfig();
+	FillWindow_MapControls();
 	constructAlliesAndFamiliarsTabFromConfig();
 	constructMiscellaneousObjectsTabFromConfig();
 	constructOverlordCardsTabFromConfig();
@@ -841,14 +845,14 @@ function collectData() {
 	for (var i = 0; i < monsterRows.length; i++) {
 		config.monsters.push(monster(monsterRows[i]));
 	}
-	config.questObjectives = getQuestObjectives();
+	config.questObjectives = Get_QuestObjectives();
 	config.hero1 = hero($('#hero1 .select-row'));
 	config.hero2 = hero($('#hero2 .select-row'));
 	config.hero3 = hero($('#hero3 .select-row'));
 	config.hero4 = hero($('#hero4 .select-row'));
-	config.tiles = getMapTiles();
-	config.doors = getDoors();
-	config.xs = getXs();
+	config.tiles = GetZone_Tile();
+	config.doors = GetZone_Doors();
+	config.xs = GetZone_Xs();
 	config.allies = getAllies();
 	config.familiars = getFamiliars();
 	config.villagers = getVillagers();

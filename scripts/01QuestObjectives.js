@@ -6,7 +6,7 @@ function InitializeWindowFor_QuestObjectives() {
 	html.append(addTextareaWithLabel("Reinforcements:", "reinforcements"));
 }
 
-function getQuestObjectives() {
+function Get_QuestObjectives() {
 	var questObjectives = {};
 	questObjectives.heroesVictory = $('#heroes-victory').val();
 	questObjectives.ovelordVictory = $('#overlord-victory').val();
@@ -15,7 +15,7 @@ function getQuestObjectives() {
 	return questObjectives;
 }
 
-function fillQuestObjectives() {
+function FillWindow_QuestObjectives() {
 	var questObjectives = config.questObjectives;
 	if (questObjectives != undefined) {
 		$('#heroes-victory').val(questObjectives.heroesVictory);
@@ -25,7 +25,7 @@ function fillQuestObjectives() {
 	}
 }
 
-function clearQuestObjectives() {
+function Clear_QuestObjectives() {
 	$('#heroes-victory').val('');
 	$('#overlord-victory').val('');
 	$('#current-status').val('');

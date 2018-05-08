@@ -1,0 +1,9 @@
+.direction-container
+{
+//	display: none;
+}
+
+.H .direction-container, .V .direction-container
+{
+//	display: block;
+}
