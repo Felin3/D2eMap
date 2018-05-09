@@ -93,19 +93,25 @@ li.H, li.V
 
 .direction-container .H
 {
-	background-color : #d54343;
-	height : 16px;
+	background-image: url("../images/misc/DirectionH.png");
+	background-repeat: no-repeat;
+//	background-color : #d54343;
+//	height : 16px;
+	height : 30px;
 	width : 30px;
-	margin-top:7px;
-	border-radius: 8px;
+//	margin-top:7px;
+//	border-radius: 8px;
 }
 .direction-container .V
 {
-	background-color : #d54343;
+	background-image: url("../images/misc/DirectionV.png");
+	background-repeat: no-repeat;
+//	background-color : #d54343;
 	height : 30px;
-	width : 16px;
-	margin-left:7px;
-	border-radius: 8px;
+//	width : 16px;
+	width : 30px;
+//	margin-left:7px;
+//	border-radius: 8px;
 }
 .direction-container
 {
