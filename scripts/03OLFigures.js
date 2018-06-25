@@ -1,22 +1,408 @@
-function InitializeWindowFor_Monsters() {
+function InitializeWindowFor_OLFigures() {
 	var html = $('#monsters');
 
 	html.append(Create_ActButton());
 
-	html.append('<div><h1>Monsters</h1></div>');
-	html.append('<div id="monsters-cards"></div>');
-	html.append('<div id="monsters-container"></div>');
-	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addMonsterLine();">Add monster row</button>');
-	html.append('<div id="lieutenants-container"><h1>Lieutenants</h1></div>');
-	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addLieutenantLine();">Add lieutenant row</button>');
-	html.append('<div id="agents-container"><h1>Agents</h1></div>');
-	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="addAgentLine();">Add agent row</button>');
-	html.append('<div id="monster-traits"></div>');
-	html.append('<div id="expansions"></div>');
+	//tiles zone
+	html.append(CreateZone_Monsters());
+	//doors zone
+	html.append(CreateZone_Lieutenants());
+	//xMarks zone
+	html.append(CreateZone_Agents());
+	//monsters traits
+	html.append(Create_MonsterTraitsList());
+	//expansions
+	html.append(Create_ExpansionList());
 }
 
+function UpdateWindow_OLFigures() {
+	//after Act Set
+	//Update_MonterImages(RowElement);
+	Update_MonterImages();
+}
+
+function GetWindow_OLFigures(DataToUpdate) {
+	DataToUpdate = GetZone_Monsters(DataToUpdate);
+	DataToUpdate = GetZone_Lieutenants(DataToUpdate);
+	DataToUpdate = GetZone_Agents(DataToUpdate);
+	DataToUpdate = GetZone_MonsterTraits(DataToUpdate);
+	return DataToUpdate;
+}
+
+function FillWindow_OLFigures(NewData, FromPreFilledMaps) {
+	//Fill_ActButton(); -> Common not Filled Here
+	FillZone_Monsters(NewData, FromPreFilledMaps);
+	FillZone_Lieutenants(NewData, FromPreFilledMaps);
+	FillZone_Agents(NewData, FromPreFilledMaps);
+	FillZone_MonsterTraits(NewData, FromPreFilledMaps);
+}
+
+function ResetWindow_OLFigures(FromPreFilledMaps) {
+	ResetZone_Monsters(FromPreFilledMaps);
+	ResetZone_Lieutenants(FromPreFilledMaps);
+	ResetZone_Agents(FromPreFilledMaps);
+	ResetZone_MonsterTraits(FromPreFilledMaps);
+}
+
+//monsters zone
+function CreateZone_Monsters() {
+	var html = $('<div>');
+	var container = $('<div>').addClass('monster-container');
+	container.append('<h1>Monsters</h1>');
+	container.append('<div class="monsters-cards"></div>');
+	container.append('<div class="monsters-relicscards"></div>');
+	container.append('<div class="monsters-tokenscards"></div>');
+	html.append(container);
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="AddLine_Monster();">Add monster</button>');
+	//initialize LineClass
+	monsterLine.NameListValues = Create_MonsterListValues();
+	monsterLine.RelicCommonImageContainer = "monsters-relicscards";
+	monsterLine.TokenCommonImageContainer = "monsters-tokenscards";
+
+	return html;
+}
+
+function GetZone_Monsters(DataToUpdate) {
+	var result = [];
+	var monsters = $('.monster-container .select-row');
+	for (var i = 0; i < monsters.length; i++) {
+		var container = $(monsters[i]);
+		var monster = {};
+		monster = monsterLine.GetOneLineData(container);
+		result.push(monster);
+	}
+	DataToUpdate.monsters = result;
+	return DataToUpdate;
+}
+
+function FillZone_Monsters(NewData, FromPreFilledMaps) {
+	ResetZone_Monsters(FromPreFilledMaps);
+	if (NewData.monsters != undefined) {
+		for (var i = 0 ; i < NewData.monsters.length; i++) {
+			monsterLine.XYBase = MONSTERS[NewData.monsters[i].title.replace(' master','').replace(' minion','')].width + 'x' + MONSTERS[NewData.monsters[i].title.replace(' master','').replace(' minion','')].height;
+			var html = monsterLine.AddOneLineWithData(NewData.monsters[i]);
+			$('.monster-container').append(html);
+		}
+		Update_MonterImages();
+	}
+}
+
+function ResetZone_Monsters(FromPreFilledMaps) {
+	$('.monster-container .select-row').remove();
+}
+
+function AddLine_Monster() {
+	monsterLine.XYBase = "1x1";
+	var html = monsterLine.AddOneEmptyLine();
+	$('.monster-container').append(html);
+	return html;
+}
+
+function Create_MonsterListValues() {
+	var html = addOption('Clear', '', 'UnSet_Monster(this);');
+	for (var i = 0; i < MONSTERS_LIST.length; i++) {
+		var monsterClass = folderize(MONSTERS_LIST[i][4]);
+		for (var j = 0; j < MONSTERS_LIST[i][5].length; j++) {
+			monsterClass += ' ';
+			monsterClass += urlize(MONSTERS_LIST[i][5][j]);
+		}
+		var monsterTitle = MONSTERS_LIST[i][0];
+		var monsterVisible = (monsterTraits[MONSTERS[monsterTitle].traits[0]] != undefined || monsterTraits[MONSTERS[monsterTitle].traits[1]] != undefined) && selectedExpansions[MONSTERS[monsterTitle].expansion] != undefined;
+		var option = $(addOption(monsterTitle + ' master', monsterClass, 'Set_Monster(this, \'' + monsterTitle + ' master' + '\');'));
+		option.css('display', monsterVisible ? 'block' : 'none');
+		html += option[0].outerHTML;
+		option = $(addOption(monsterTitle + ' minion', monsterClass, 'Set_Monster(this, \'' + monsterTitle + ' minion' + '\');'));
+		option.css('display', monsterVisible ? 'block' : 'none');
+		html += option[0].outerHTML;
+	}
+	return html;
+}
+
+function Set_Monster(element, value) {
+	var container = $(element).parents('.select-row');
+	//for copatibility
+	if (value.indexOf(" minion") < 0 && value.indexOf(" master") < 0)
+	{
+		//by default minion
+		value = value + ' minion';
+	}
+	var OneMonterValue = value.replace(' master','').replace(' minion','');
+	monsterLine.XYBase = MONSTERS[OneMonterValue].width + 'x' + MONSTERS[OneMonterValue].height;
+	monsterLine.Set_MainElement(container, value);
+	Update_MonterImages(container);
+}
+
+function UnSet_Monster(element) {
+	var container = $(element).parents('.select-row');
+	monsterLine.UnSet_MainElement(container);
+	Update_MonterImages(container);
+}
+
+function Update_MonterImages(RowElement) {
+	var MonsterImageContainer = $('.monsters-cards');
+	var MonterList = $('.monster-container').find('.MainElement-Value');
+	Reset_MonterImages(RowElement);
+	var actAddition = (CurrentAct == "I") ? '_act1' : '_act2';
+	for (var i = 0; i < MonterList.length; i++) {
+		var OneMonterValue = $(MonterList[i]).attr('value').replace(' master','').replace(' minion','');
+		if (OneMonterValue == undefined || OneMonterValue == '') continue;
+		if (MonsterImageContainer.find('.' + urlize(OneMonterValue)).length == 0)
+		{
+			var MonterImage = $('<img>');
+			MonterImage.attr('src', 'images/monster_cards/' + urlize(OneMonterValue) + actAddition + '.png').addClass('monster').addClass(urlize(OneMonterValue));
+			MonsterImageContainer.append(MonterImage);
+			if (MONSTERS[OneMonterValue].hasBack) {
+				var monsterCardBack = $('<img>');
+				monsterCardBack.attr('src', 'images/monster_cards/' + urlize(OneMonterValue) + '_back' + actAddition + '.png');
+				MonsterImageContainer.append(monsterCardBack);
+			}
+		}
+	}
+}
+
+function Reset_MonterImages(RowElement) {
+	var MonsterImageContainer = $('.monsters-cards');
+	MonsterImageContainer.find('img').remove()
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//lieutenants zone
+function CreateZone_Lieutenants() {
+	var html = $('<div>');
+	var container = $('<div>').addClass('lieutenants-container');
+	container.append('<h1>Lieutenants</h1>');
+	html.append(container);
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="AddLine_Lieutenant();">Add lieutenant</button>');
+	//initialize LineClass
+	lieutenantLine.NameListValues = Create_LieutenantListValues();
+
+	return html;
+}
+
+function GetZone_Lieutenants(DataToUpdate) {
+	var result = [];
+	var lieutenants = $('.lieutenants-container .select-row');
+	for (var i = 0; i < lieutenants.length; i++) {
+		var container = $(lieutenants[i]);
+		var lieutenant = {};
+		lieutenant = lieutenantLine.GetOneLineData(container);
+		result.push(lieutenant);
+	}
+	DataToUpdate.lieutenants = result;
+	return DataToUpdate;
+}
+
+function FillZone_Lieutenants(NewData, FromPreFilledMaps) {
+	ResetZone_Lieutenants(FromPreFilledMaps);
+	if (NewData.lieutenants != undefined) {
+		for (var i = 0 ; i < NewData.lieutenants.length; i++) {
+			lieutenantLine.XYBase = "1x1";
+			var html = lieutenantLine.AddOneLineWithData(NewData.lieutenants[i]);
+			$('.lieutenants-container').append(html);
+		}
+	}
+}
+
+function ResetZone_Lieutenants(FromPreFilledMaps) {
+	$('.lieutenants-container .select-row').remove();
+}
+
+function AddLine_Lieutenant() {
+	lieutenantLine.XYBase = "1x1";
+	var html = lieutenantLine.AddOneEmptyLine();
+	$('.lieutenants-container').append(html);
+	return html;
+}
+
+function Create_LieutenantListValues() {
+	var html = addOption('Clear', '', 'UnSet_Lieutenant(this);');
+	for (var i = 0; i < DOORS_LIST.length; i++) {
+		html += addOption(DOORS_LIST[i] + ' ', '', 'Set_Lieutenant(this, \'' + DOORS_LIST[i] + '\')');
+	}
+	return html;
+}
+
+function Set_Lieutenant(element, value) {
+	lieutenantLine.XYBase = "1x1";
+	var container = $(element).parents('.select-row');
+	lieutenantLine.Set_MainElement(container, value);
+}
+
+function UnSet_Lieutenant(element) {
+	var container = $(element).parents('.select-row');
+	lieutenantLine.UnSet_MainElement(container);
+}
+
+//agents zone
+function CreateZone_Agents() {
+	var html = $('<div>');
+	var container = $('<div>').addClass('agents-container');
+	container.append('<h1>Agents</h1>');
+	html.append(container);
+	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="AddLine_Agent();">Add agent</button>');
+	//initialize LineClass
+	agentLine.NameListValues = Create_AgentListValues();
+
+	return html;
+}
+
+function GetZone_Agents(DataToUpdate) {
+	var result = [];
+	var agents = $('.agents-container .select-row');
+	for (var i = 0; i < agents.length; i++) {
+		var container = $(agents[i]);
+		var agent = {};
+		agent = agentLine.GetOneLineData(container);
+		result.push(agent);
+	}
+	DataToUpdate.agents = result;
+	return DataToUpdate;
+}
+
+function FillZone_Agents(NewData, FromPreFilledMaps) {
+	ResetZone_Agents(FromPreFilledMaps);
+	if (NewData.agents != undefined) {
+		for (var i = 0 ; i < NewData.agents.length; i++) {
+			agentLine.XYBase = "1x1";
+			var html = agentLine.AddOneLineWithData(NewData.agents[i]);
+			$('.agents-container').append(html);
+		}
+	}
+}
+
+function ResetZone_Agents(FromPreFilledMaps) {
+	$('.agents-container .select-row').remove();
+}
+
+function AddLine_Agent() {
+	agentLine.XYBase = "1x1";
+	var html = agentLine.AddOneEmptyLine();
+	$('.agents-container').append(html);
+	return html;
+}
+
+function Create_AgentListValues() {
+	var html = addOption('Clear', '', 'UnSet_Agent(this);');
+	for (var i = 0; i < DOORS_LIST.length; i++) {
+		html += addOption(DOORS_LIST[i] + ' ', '', 'Set_Agent(this, \'' + DOORS_LIST[i] + '\')');
+	}
+	return html;
+}
+
+function Set_Agent(element, value) {
+	agentLine.XYBase = "1x1";
+	var container = $(element).parents('.select-row');
+	agentLine.Set_MainElement(container, value);
+}
+
+function UnSet_Agent(element) {
+	var container = $(element).parents('.select-row');
+	agentLine.UnSet_MainElement(container);
+}
+
+
+//monsters traits
+function Create_MonsterTraitsList()
+{
+	var html;
+	html = $('<div>').addClass('monster-traits');
+	for (var i = 0; i < MONSTER_TRAITS.length; i++) {
+		var monsterTrait = MONSTER_TRAITS[i];
+		var traitObject = $('<div>').addClass('checkbox');
+		traitObject.append($('<img src="images/monster_traits/' + urlize(monsterTrait) + '.png"/>'));
+		var traitInput = $('<input type="checkbox" class="MonstrerTraits-Value" name="' + urlize(monsterTrait) + '" onClick="Set_MonsterTrait(this, \'' + folderize(monsterTrait) + '\');" />');
+		traitInput.prop('checked', true);
+		traitObject.append($('<label></label>').append(traitInput));
+		html.append(traitObject);
+	}
+	return html;
+}
+
+function GetZone_MonsterTraits(DataToUpdate) {
+	var result = [];
+	var SelecttedMonsterTraits = $('.MonstrerTraits-Value:checkbox:checked')
+	for (var i = 0; i < SelecttedMonsterTraits.length; i++) {
+		var checkedTrait = $(SelecttedMonsterTraits[i]).attr('name');
+		result[checkedTrait] = checkedTrait;
+	}
+	DataToUpdate.monsterTraits = result;
+	return DataToUpdate;
+}
+
+function FillZone_MonsterTraits(NewData, FromPreFilledMaps) {
+	ResetZone_MonsterTraits(FromPreFilledMaps);
+	if (NewData.monsterTraits != undefined) {
+		for (var i = 0 ; i < NewData.monsterTraits.length; i++) {
+			Set_MonsterTrait($('.monster-traits'), NewData.monsterTraits[i]);
+		}
+	}
+}
+
+function ResetZone_MonsterTraits(FromPreFilledMaps) {
+	//$('.agents-container .select-row').remove();
+}
+
+function Set_MonsterTrait(element, value) {
+	//$('[name="' + urlize(value) + '"]').prop('checked',true);
+	//Data Linked
+	adjustMonsterList();
+}
+
+function updateTraitsFromConfig() {
+	if (config.monsterTraits != undefined) {
+		monsterTraits = config.monsterTraits;
+		updateTraits();
+	}
+}
+
+function updateTraits() {
+	$('.monster-traits input').prop('checked',false);
+	for (var monsterTrait in monsterTraits) {
+		if (monsterTraits[monsterTrait] == undefined) continue;
+		$('[name="' + urlize(monsterTrait) + '"]').prop('checked',true);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function constructMonstersAndLieutenantsTabFromConfig() {
-	removeMonsterRows();
+	ResetZone_Monsters();
 
 	if (config.currentAct != undefined) {
 		Fill_ActButton();
@@ -94,28 +480,25 @@ function constructMonstersAndLieutenantsTabFromConfig() {
 	}
 }
 
-function addMonsterLine() {
-	var monsterLine = $('<div>').attr('id','monster' + monsterNumber.toString());
-	monsterNumber += 1;
-	addUnitLine(monsterLine, 'monster');
-	monsterLine.append($('<button type="button" class="btn btn-warning" aria-expanded="false" onclick="addCondition(this);">Add token</button>'));
-	monsterLine.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove monster</button>'));
-	monsterLine.append($('<input type="hidden" name="master" value=""/>'));
-	monsterLine.append($('<input type="hidden" name="monster-y-size" value=""/>'));
-	monsterLine.append($('<input type="hidden" name="monster-x-size" value=""/>'));
-
-	monsterLine.find('.select-monster ul').append(createMonsterSelectContent());
-	monsterLine.find('.select-x ul').append(createXSelectContent(false));
-	monsterLine.find('.select-y ul').append(createYSelectContent(false));
-	$('#monsters-container').append(monsterLine);
-	return monsterLine;
+function monster(element) {
+	var container = $(element);
+	var monster = {};
+	monster.title = container.find('[name="monster-title"]').val();
+	monster.master = container.find('[name="master"]').val() == 'true';
+	monster.x = container.find('[name="monster-x"]').val();
+	monster.y = container.find('[name="monster-y"]').val();
+	monster.vertical = container.find('[name="monster-x-size"]').val() < container.find('[name="monster-y-size"]').val();
+	monster.hp = container.find('[name="monster-hp"]').val();
+	monster.conditions = getConditions(container);
+	return monster;
 }
+
 
 function updateMonstersVisibility() {
 	monsterTraits = {};
 	selectedExpansions = {};
-	var traitInputs = $('#monster-traits input');
-	var expansionInputs = $('#expansions input');
+	var traitInputs = $('.monster-traits input');
+	var expansionInputs = $('.expansions input');
 	for (var i = 0; i < traitInputs.length; i++) {
 		if ($(traitInputs[i]).prop('checked')) {
 			var checkedTrait = $(traitInputs[i]).attr('name');
@@ -175,29 +558,6 @@ function updateMonster(element, value) {
 	adjustMonsterList();
 }
 
-function createMonsterSelectContent() {
-	var html = '';
-	for (var i = 0; i < MONSTERS_LIST.length; i++) {
-		var monsterClass = folderize(MONSTERS_LIST[i][4]);
-		for (var j = 0; j < MONSTERS_LIST[i][5].length; j++) {
-			monsterClass += ' ';
-			monsterClass += urlize(MONSTERS_LIST[i][5][j]);
-		}
-		var monsterTitle = MONSTERS_LIST[i][0];
-		var monsterVisible = (monsterTraits[MONSTERS[monsterTitle].traits[0]] != undefined || monsterTraits[MONSTERS[monsterTitle].traits[1]] != undefined) && selectedExpansions[MONSTERS[monsterTitle].expansion] != undefined;
-		var option = $(addOption(monsterTitle + ' master', monsterClass, 'updateMonster(this, \'' + monsterTitle + '\');'));
-		option.css('display', monsterVisible ? 'block' : 'none');
-		html += option[0].outerHTML;
-		option = $(addOption(monsterTitle + ' minion', monsterClass, 'updateMonster(this, \'' + monsterTitle + '\');'));
-		option.css('display', monsterVisible ? 'block' : 'none');
-		html += option[0].outerHTML;
-	}
-	return html;
-}
-
-function removeMonsterRows() {
-	$('#monsters-container .select-row').remove();
-}
 
 function addLieutenantLine() {
 	var lieutenant = $('<div>');
@@ -414,73 +774,4 @@ function clearAgents() {
 }
 
 
-function updateTraitsAndExpansionsFromConfig() {
-	updateTraitsFromConfig();
-	updateExpansionsFromConfig();
-}
 
-function createMonsterTraitsBlock() {
-	var html = $('#monster-traits');
-	for (var i = 0; i < MONSTER_TRAITS.length; i++) {
-		var monsterTrait = MONSTER_TRAITS[i];
-		var traitObject = $('<div>').addClass('checkbox');
-		traitObject.append($('<img src="images/monster_traits/' + urlize(monsterTrait) + '.png"/>'));
-		var traitInput = $('<input type="checkbox" name="' + urlize(monsterTrait) + '" onClick="updateMonstersVisibility();" />');
-		traitInput.prop('checked', true);
-		traitObject.append($('<label></label>').append(traitInput));
-		html.append(traitObject);
-	}
-	return html;
-}
-
-function updateTraitsFromConfig() {
-	if (config.monsterTraits != undefined) {
-		monsterTraits = config.monsterTraits;
-		updateTraits();
-	}
-}
-
-function updateTraits() {
-	$('#monster-traits input').prop('checked',false);
-	for (var monsterTrait in monsterTraits) {
-		if (monsterTraits[monsterTrait] == undefined) continue;
-		$('[name="' + urlize(monsterTrait) + '"]').prop('checked',true);
-	}
-}
-
-function createExpansionsBlock() {
-	var html = $('#expansions');
-	for (var expansionGroup in EXPANSION_GROUPS) {
-		if (EXPANSION_GROUPS[expansionGroup] == undefined) continue;
-		var GroupHTML = $('<div>').addClass('expansions-group');
-		GroupHTML.append("<b>"+expansionGroup+"</b>");
-		var expansionList = EXPANSION_GROUPS[expansionGroup];
-
-		for (var i = 0; i < expansionList.length; i++) {
-			var expansion = expansionList[i];
-			var expansionObject = $('<div>').addClass('checkbox');
-			var expansionInput = $('<input type="checkbox" name="' + folderize(expansion) + '" onClick="updateMonstersVisibility();" />');
-			expansionInput.prop('checked', true);
-			expansionObject.append($('<label> ' + expansion + '</label>').prepend(expansionInput));
-			GroupHTML.append(expansionObject);
-		}
-		html.append(GroupHTML);
-	}
-
-	return html;
-}
-
-function updateExpansionsFromConfig() {
-	if (config.expansions != undefined) {
-		selectedExpansions = config.expansions;
-		updateExpansions();
-	}
-}
-
-function updateExpansions() {
-	$('#expansions input').prop('checked',false);
-	for (var selectedExpansion in selectedExpansions) {
-		if (selectedExpansions[selectedExpansion] == undefined) continue;
-		$('[name="' + urlize(selectedExpansion) + '"]').prop('checked',true);
-	}
-}

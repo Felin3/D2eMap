@@ -1608,9 +1608,12 @@ SHOWING_CLASSES[1] = 'showOneCell';
 SHOWING_CLASSES[2] = 'showTwoCells';
 SHOWING_CLASSES[3] = 'showThreeCells';
 
+var conditionNumber = 1;
+var relicNumber = 1;
+var auraNumber = 1;
+
 var monsterNumber = 1;
 var sackNumber = 1;
-var conditionNumber = 1;
 
 var config = {};
 
@@ -1761,10 +1764,39 @@ doorLine.XYBase = '1x2';		//DefaultValue
 doorLine.needOpenedCheckbox = true;
 doorLine.needRemoveButton = true;
 
-var xBlockLine = new LineClass('X Mark','xMark');
-xBlockLine.needCoordinates = true;
-xBlockLine.XYBase = '1x1';		//DefaultValue
-xBlockLine.needRemoveButton = true;
+var xMarkLine = new LineClass('X Mark','xMark');
+xMarkLine.needCoordinates = true;
+xMarkLine.XYBase = '1x1';		//DefaultValue
+xMarkLine.needRemoveButton = true;
+
+var monsterLine = new LineClass('monster','monster');
+monsterLine.needCoordinates = true;
+monsterLine.XYBase = '1x1';		//DefaultValue
+monsterLine.needHPInput = true;
+monsterLine.needAddTokenButton = true;
+monsterLine.needAddRelicButton = true;
+monsterLine.needAddAuraButton = true;
+monsterLine.needRemoveButton = true;
+monsterLine.UsesImages = true;
+
+var lieutenantLine = new LineClass('lieutenant','lieutenant');
+lieutenantLine.needCoordinates = true;
+lieutenantLine.XYBase = '1x1';		//DefaultValue
+lieutenantLine.needHPInput = true;
+lieutenantLine.needAddTokenButton = true;
+lieutenantLine.needAddRelicButton = true;
+lieutenantLine.needAddAuraButton = true;
+lieutenantLine.needRemoveButton = true;
+lieutenantLine.UsesImages = true;
+
+var agentLine = new LineClass('agent','agent');
+agentLine.needCoordinates = true;
+agentLine.XYBase = '1x1';		//DefaultValue
+agentLine.needHPInput = true;
+agentLine.needAddTokenButton = true;
+agentLine.needAddAuraButton = true;
+agentLine.needRemoveButton = true;
+agentLine.UsesImages = true;
 
 
 

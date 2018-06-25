@@ -369,6 +369,8 @@ li.H, li.V
 	top: 1px;
 }
 
+.select-token,
+.select-relic,
 .coordinates-container > .btn-group,
 .select-row > .btn-group,
 .select-row > input[type="text"],
@@ -484,13 +486,41 @@ img.familiar-image {
 	font-size: 30px;
 }
 
+
+.monsters-cards img, .monsters-relicscards img, .monsters-tokenscards img {
+    margin-right: 10px;
+    margin-bottom: 25px;
+    max-height: 300px;
+}
+
+.monsters-cards {
+	float:left;
+}
+
+.monsters-relicscards {
+	float:left;
+}
+
+.monsters-tokenscards {
+//	float:left;
+}
+
 .conditions {
 	position: absolute;
 	right: -5px;
 	top: -5px;
 }
-
 .conditions img {
+	width: 30px;
+	left: 0;
+}
+
+.relics {
+	position: absolute;
+	right: -5px;
+	top: -5px;
+}
+.relics img {
 	width: 30px;
 	left: 0;
 }
@@ -523,26 +553,20 @@ img.relic-image {
 	cursor: pointer;
 }
 
-#monster-traits img {
+.monster-traits img {
     height: 50px;
     margin-right: 15px;
 }
 
-#monster-traits .checkbox {
+.monster-traits .checkbox {
     display: inline-block;
     margin-right: 10px;
 }
 
-#monster-traits label {
+.monster-traits label {
     display: block;
     text-align: center;
     padding-left: 15px;
-}
-
-#monsters-cards img {
-    margin-right: 10px;
-    margin-bottom: 25px;
-    max-height: 300px;
 }
 
 .expansions-group {
@@ -557,12 +581,12 @@ img.relic-image {
 	color: white;
 }
 
-#tinyUrl, #map-transformation {
+#tinyUrl, .map-transformation {
 	display: inline-block;
     padding-left: 20px;
 }
 
-#map-transformation .btn-link {
+.map-transformation .btn-link {
 	color: white;
 	outline: none;
 }
@@ -671,12 +695,18 @@ ul#tabs > li > a {
 .condition {
 	height: 300px;
 }
-
 .select-row .condition {
 	display: inline-block;
 }
 
-#map-transformation input {
+.relic {
+	height: 300px;
+}
+.select-row .relic {
+	display: inline-block;
+}
+
+.map-transformation input {
     width: 50px;
 }
 
@@ -799,4 +829,26 @@ ul#tabs > li > a {
 .btn-group .direction-container.visible
 {
 	display: block;
+}
+
+
+a.boxclose{
+    float:right;
+    margin-top:-14px;
+    margin-right:-20px;
+    cursor:pointer;
+    color: #fff;
+    border: 3px solid #AEAEAE;
+    border-radius: 10px;
+    background: #605F61;
+    font-size: 10px;
+    font-weight: bold;
+    display: inline-block;
+    line-height: 0px;
+    padding: 4px 1px;       
+}
+
+.boxclose:before {
+    content: "X";
+
 }
