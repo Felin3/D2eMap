@@ -1751,25 +1751,25 @@ var overlordRelicNumber = 0;
 
 
 //Initialize Global Data (Mainly LineClass)
-var tileLine = new LineClass('tile','tile');
+var tileLine = new LineClass('tile','tile','');
 tileLine.needSideList = true;
 tileLine.needCoordinates = true;
 tileLine.XYBase = '1x1';		//DefaultValue
 tileLine.needAngleList = true;
 tileLine.needRemoveButton = true;
 
-var doorLine = new LineClass('door','door');
+var doorLine = new LineClass('door','door','');
 doorLine.needCoordinates = true;
 doorLine.XYBase = '1x2';		//DefaultValue
 doorLine.needOpenedCheckbox = true;
 doorLine.needRemoveButton = true;
 
-var xMarkLine = new LineClass('X Mark','xMark');
+var xMarkLine = new LineClass('X Mark','xMark','');
 xMarkLine.needCoordinates = true;
 xMarkLine.XYBase = '1x1';		//DefaultValue
 xMarkLine.needRemoveButton = true;
 
-var monsterLine = new LineClass('monster','monster');
+var monsterLine = new LineClass('monster','monster','RemoveLine_Monster(this);');
 monsterLine.needCoordinates = true;
 monsterLine.XYBase = '1x1';		//DefaultValue
 monsterLine.needHPInput = true;
@@ -1777,9 +1777,8 @@ monsterLine.needAddTokenButton = true;
 monsterLine.needAddRelicButton = true;
 monsterLine.needAddAuraButton = true;
 monsterLine.needRemoveButton = true;
-monsterLine.UsesImages = true;
 
-var lieutenantLine = new LineClass('lieutenant','lieutenant');
+var lieutenantLine = new LineClass('lieutenant','lieutenant','RemoveLine_Lieutenant(this);');
 lieutenantLine.needCoordinates = true;
 lieutenantLine.XYBase = '1x1';		//DefaultValue
 lieutenantLine.needHPInput = true;
@@ -1787,16 +1786,16 @@ lieutenantLine.needAddTokenButton = true;
 lieutenantLine.needAddRelicButton = true;
 lieutenantLine.needAddAuraButton = true;
 lieutenantLine.needRemoveButton = true;
-lieutenantLine.UsesImages = true;
+lieutenantLine.UsesMainCommonImages = true;
 
-var agentLine = new LineClass('agent','agent');
+var agentLine = new LineClass('agent','agent','RemoveLine_Agent(this);');
 agentLine.needCoordinates = true;
 agentLine.XYBase = '1x1';		//DefaultValue
 agentLine.needHPInput = true;
 agentLine.needAddTokenButton = true;
 agentLine.needAddAuraButton = true;
 agentLine.needRemoveButton = true;
-agentLine.UsesImages = true;
+agentLine.UsesMainCommonImages = true;
 
 
 

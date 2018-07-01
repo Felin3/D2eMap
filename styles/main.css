@@ -487,22 +487,32 @@ img.familiar-image {
 }
 
 
+.row-cards img, .row-relicscards img, .row-tokenscards img, 
 .monsters-cards img, .monsters-relicscards img, .monsters-tokenscards img {
-    margin-right: 10px;
-    margin-bottom: 25px;
-    max-height: 300px;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 10px;
+	margin-bottom: 25px;
+	max-height: 300px;
+	display :inline;
 }
 
+.row-cards,
 .monsters-cards {
-	float:left;
+/*	float:left;*/
+	display :inline;
 }
 
+.row-relicscards,
 .monsters-relicscards {
-	float:left;
+/*	float:left;*/
+	display :inline;
 }
 
+.row-tokenscards,
 .monsters-tokenscards {
-//	float:left;
+/*	float:left;*/
+	display :inline;
 }
 
 .conditions {

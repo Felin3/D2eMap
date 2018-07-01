@@ -1,17 +1,17 @@
-function LineClass(elementName, elementID) {
+function LineClass(elementName, elementID, RemoveCallBack) {
+	//global parameters (the same for every MainElement)
 	this.elementName = elementName;
 	this.elementID = folderize(elementID).toLowerCase();
 	this.NameListValues;
 	this.needSideList = false;
 	this.needCoordinates = false;
-	this.XYBase = "1x1";				// -> should have a value if needCoordinates = true
 	this.needAngleList = false;
 	this.needOpenedCheckbox = false;
 	this.needHPInput = false;
 	this.needFatigueInput = false;
 	this.needArchetypeList = false;
 	this.needClassList = false;
-	this.UsesImages = false;
+	this.UsesMainCommonImages = false;
 	this.MainCommonImageContainer = "";
 	this.TokenCommonImageContainer = "";
 	this.RelicCommonImageContainer = "";
@@ -19,10 +19,25 @@ function LineClass(elementName, elementID) {
 	this.needAddRelicButton = false;
 	this.needAddAuraButton = false;
 	this.needRemoveButton = false;
+	this.CallBackOnRemove = RemoveCallBack;		// -> should have a value if needRemoveButton = true
+
+	//specific parameters (could be different from line to line for the same MainElement)
+	this.XYBase = "1x1";						// -> should have a value if needCoordinates = true
 
 	this.AddOneEmptyLine = function() {
 			var lineHTML = $('<div>');
 			lineHTML.addClass('select-row');
+
+			if (this.UsesMainCommonImages == true) {
+				lineHTML.append('<div class="Row-cards"></div>');
+			}
+			if (this.needAddRelicButton == true && this.RelicCommonImageContainer == "") {
+				lineHTML.append('<div class="Row-relicscards"></div>');
+			}
+			if (this.needAddTokenButton == true && this.TokenCommonImageContainer == "") {
+				lineHTML.append('<div class="Row-tokenscards"></div>');
+			}
+			lineHTML.append('<div style="clear:both"></div>');
 
 			lineHTML.append(Create_MainElementList(this.elementName, this.elementID, this.NameListValues));
 
@@ -58,16 +73,14 @@ function LineClass(elementName, elementID) {
 				lineHTML.append(Create_AuraButton());
 			}
 			if (this.needRemoveButton == true) {
-				lineHTML.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="removeRow(this);">Remove ' + this.elementName + '</button>'));
-			}
-			if (this.UsesImages == true) {
-				lineHTML.append('<div class="Row-cards"></div>');
-				if (this.needAddTokenButton == true) {
-					lineHTML.append('<div class="Row-relicscards"></div>');
+				var AdditionalCallBacks = "";		//Mainly for Images Updates
+				if (this.needAddTokenButton == true && this.TokenCommonImageContainer != "") {
+					AdditionalCallBacks = AdditionalCallBacks + "Update_TokenImages(this.parentElement);";
 				}
-				if (this.needAddRelicButton == true) {
-					lineHTML.append('<div class="Row-tokenscards"></div>');
+				if (this.needAddRelicButton == true && this.RelicCommonImageContainer != "") {
+					AdditionalCallBacks = AdditionalCallBacks + "Update_RelicImages(this.parentElement);";
 				}
+				lineHTML.append($('<button type="button" class="btn btn-danger" aria-expanded="false" onclick="RemoveOneRow(this);' + AdditionalCallBacks + RemoveCallBack + '">Remove ' + this.elementName + '</button>'));
 			}
 			return lineHTML;
 		};
@@ -166,6 +179,11 @@ function LineClass(elementName, elementID) {
 			}
 			return LineData;
 		};
+}
+
+
+function RemoveOneRow(element) {
+	$(element).parents('.select-row').remove();
 }
 
 // Main Element
@@ -503,14 +521,17 @@ function Add_TokenImage(RowElement, NewValue) {
 
 function Update_TokenImages(RowElement) {
 	var TokenImageContainer;
+	RowElement = $(RowElement);
 	var ContainerName = RowElement.find('input[name="TokenImageContainer"]').val();
+	var TokenList;
 	if (ContainerName == "") {
 		TokenImageContainer = $(RowElement.find('.Row-tokenscards'));
+		TokenList = RowElement.find('.Token-Value');
 	}
 	else {
 		TokenImageContainer = $('.'+ContainerName);
+		TokenList = $('.'+RowElement.find('.MainElement-ID').val()+'-container').find('.Token-Value');
 	}
-	var TokenList = $('.'+RowElement.find('.MainElement-ID').val()+'-container').find('.Token-Value');
 	Reset_TokenImages(RowElement);
 	for (var i = 0; i < TokenList.length; i++) {
 		var OneTokenValue = $(TokenList[i]).attr('value');
@@ -629,14 +650,17 @@ function Add_RelicImage(RowElement, NewValue) {
 
 function Update_RelicImages(RowElement) {
 	var RelicImageContainer = $('.'+ContainerName);
+	RowElement = $(RowElement);
 	var ContainerName = RowElement.find('input[name="RelicImageContainer"]').val();
+	var RelicList;
 	if (ContainerName == "") {
 		RelicImageContainer = $(RowElement.find('.Row-relicscards'));
+		RelicList = RowElement.find('.Relic-Value');
 	}
 	else {
 		RelicImageContainer = $('.'+ContainerName);
+		RelicList = $('.'+RowElement.find('.MainElement-ID').val()+'-container').find('.Relic-Value');
 	}
-	var RelicList = $('.'+RowElement.find('.MainElement-ID').val()+'-container').find('.Relic-Value');
 	Reset_RelicImages(RowElement);
 	for (var i = 0; i < RelicList.length; i++) {
 		var OneRelicValue = $(RelicList[i]).attr('value');

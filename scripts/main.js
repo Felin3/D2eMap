@@ -636,6 +636,44 @@ function constructMapFromConfig() {
 			'top' : (lieutenant.y * cellSize).toString() + 'px',
 			'z-index' : z_index
 		});
+
+		if (lieutenant.auras != undefined) {
+			for (var j = 0; j < lieutenant.auras.length; j++) {
+				var aura = $('<div>');
+				var auraRadius = parseInt(lieutenant.auras[j].radius);
+
+				var xDelta;
+				var yDelta;
+				if (lieutenant.vertical) {
+					xDelta = LIEUTENANTS[lieutenant.title].width;
+					yDelta = LIEUTENANTS[lieutenant.title].height;
+					}
+				else {
+					xDelta = LIEUTENANTS[lieutenant.title].height;
+					yDelta = LIEUTENANTS[lieutenant.title].width;
+					}
+				if (lieutenant.direction == "V") {
+					xDelta = LIEUTENANTS[lieutenant.title].width;
+					yDelta = LIEUTENANTS[lieutenant.title].height;
+					}
+				else {
+					xDelta = LIEUTENANTS[lieutenant.title].height;
+					yDelta = LIEUTENANTS[lieutenant.title].width;
+					}
+
+				aura.css({
+					'position' : 'absolute',
+					'left' : '-' + (auraRadius * cellSize).toString() + 'px',
+					'top' : '-' + (auraRadius * cellSize).toString() + 'px',
+					'width' : ((2 * auraRadius + xDelta) * cellSize).toString() + 'px',
+					'height' : ((2 * auraRadius + yDelta) * cellSize).toString() + 'px',
+					'background' : lieutenant.auras[j].color,
+					'opacity' : '0.2',
+					'border-radius' : (cellSize / 2).toString() + 'px'
+				});
+				lieutenantObject.append(aura);
+			}
+		}
 		lieutenantImage.attr('src', folder + urlize(lieutenant.title) + '.png');
 		lieutenantObject.append(lieutenantImage);
 		lieutenantObject.append(lieutenantHp);
@@ -660,6 +698,44 @@ function constructMapFromConfig() {
 			'top' : (agent.y * cellSize).toString() + 'px',
 			'z-index' : z_index
 		});
+
+		if (agent.auras != undefined) {
+			for (var j = 0; j < agent.auras.length; j++) {
+				var aura = $('<div>');
+				var auraRadius = parseInt(agent.auras[j].radius);
+
+				var xDelta;
+				var yDelta;
+				if (agent.vertical) {
+					xDelta = LIEUTENANTS[agent.title].width;
+					yDelta = LIEUTENANTS[agent.title].height;
+					}
+				else {
+					xDelta = LIEUTENANTS[agent.title].height;
+					yDelta = LIEUTENANTS[agent.title].width;
+					}
+				if (lieutenant.direction == "V") {
+					xDelta = LIEUTENANTS[agent.title].width;
+					yDelta = LIEUTENANTS[agent.title].height;
+					}
+				else {
+					xDelta = LIEUTENANTS[agent.title].height;
+					yDelta = LIEUTENANTS[agent.title].width;
+					}
+
+				aura.css({
+					'position' : 'absolute',
+					'left' : '-' + (auraRadius * cellSize).toString() + 'px',
+					'top' : '-' + (auraRadius * cellSize).toString() + 'px',
+					'width' : ((2 * auraRadius + xDelta) * cellSize).toString() + 'px',
+					'height' : ((2 * auraRadius + yDelta) * cellSize).toString() + 'px',
+					'background' : agent.auras[j].color,
+					'opacity' : '0.2',
+					'border-radius' : (cellSize / 2).toString() + 'px'
+				});
+				agentObject.append(aura);
+			}
+		}
 		agentImage.attr('src', folder + urlize(agent.title.replace('Agent ', '')) + '.png');
 		agentObject.append(agentImage);
 		agentObject.append(agentHp);

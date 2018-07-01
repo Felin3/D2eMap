@@ -17,8 +17,8 @@ function InitializeWindowFor_OLFigures() {
 
 function UpdateWindow_OLFigures() {
 	//after Act Set
-	//Update_MonterImages(RowElement);
-	Update_MonterImages();
+	//Update_MonsterImages(RowElement);
+	Update_MonsterImages();
 }
 
 function GetWindow_OLFigures(DataToUpdate) {
@@ -83,7 +83,7 @@ function FillZone_Monsters(NewData, FromPreFilledMaps) {
 			var html = monsterLine.AddOneLineWithData(NewData.monsters[i]);
 			$('.monster-container').append(html);
 		}
-		Update_MonterImages();
+		Update_MonsterImages();
 	}
 }
 
@@ -96,6 +96,10 @@ function AddLine_Monster() {
 	var html = monsterLine.AddOneEmptyLine();
 	$('.monster-container').append(html);
 	return html;
+}
+
+function RemoveLine_Monster(Button) {
+	Update_MonsterImages();
 }
 
 function Create_MonsterListValues() {
@@ -126,41 +130,41 @@ function Set_Monster(element, value) {
 		//by default minion
 		value = value + ' minion';
 	}
-	var OneMonterValue = value.replace(' master','').replace(' minion','');
-	monsterLine.XYBase = MONSTERS[OneMonterValue].width + 'x' + MONSTERS[OneMonterValue].height;
+	var OneMonsterValue = value.replace(' master','').replace(' minion','');
+	monsterLine.XYBase = MONSTERS[OneMonsterValue].width + 'x' + MONSTERS[OneMonsterValue].height;
 	monsterLine.Set_MainElement(container, value);
-	Update_MonterImages(container);
+	Update_MonsterImages(container);
 }
 
 function UnSet_Monster(element) {
 	var container = $(element).parents('.select-row');
 	monsterLine.UnSet_MainElement(container);
-	Update_MonterImages(container);
+	Update_MonsterImages(container);
 }
 
-function Update_MonterImages(RowElement) {
+function Update_MonsterImages(RowElement) {
 	var MonsterImageContainer = $('.monsters-cards');
-	var MonterList = $('.monster-container').find('.MainElement-Value');
-	Reset_MonterImages(RowElement);
+	var MonsterList = $('.monster-container').find('.MainElement-Value');
+	Reset_MonsterImages(RowElement);
 	var actAddition = (CurrentAct == "I") ? '_act1' : '_act2';
-	for (var i = 0; i < MonterList.length; i++) {
-		var OneMonterValue = $(MonterList[i]).attr('value').replace(' master','').replace(' minion','');
-		if (OneMonterValue == undefined || OneMonterValue == '') continue;
-		if (MonsterImageContainer.find('.' + urlize(OneMonterValue)).length == 0)
+	for (var i = 0; i < MonsterList.length; i++) {
+		var OneMonsterValue = $(MonsterList[i]).attr('value').replace(' master','').replace(' minion','');
+		if (OneMonsterValue == undefined || OneMonsterValue == '') continue;
+		if (MonsterImageContainer.find('.' + urlize(OneMonsterValue)).length == 0)
 		{
-			var MonterImage = $('<img>');
-			MonterImage.attr('src', 'images/monster_cards/' + urlize(OneMonterValue) + actAddition + '.png').addClass('monster').addClass(urlize(OneMonterValue));
-			MonsterImageContainer.append(MonterImage);
-			if (MONSTERS[OneMonterValue].hasBack) {
+			var MonsterImage = $('<img>');
+			MonsterImage.attr('src', 'images/monster_cards/' + urlize(OneMonsterValue) + actAddition + '.png').addClass('monster').addClass(urlize(OneMonsterValue));
+			MonsterImageContainer.append(MonsterImage);
+			if (MONSTERS[OneMonsterValue].hasBack) {
 				var monsterCardBack = $('<img>');
-				monsterCardBack.attr('src', 'images/monster_cards/' + urlize(OneMonterValue) + '_back' + actAddition + '.png');
+				monsterCardBack.attr('src', 'images/monster_cards/' + urlize(OneMonsterValue) + '_back' + actAddition + '.png');
 				MonsterImageContainer.append(monsterCardBack);
 			}
 		}
 	}
 }
 
-function Reset_MonterImages(RowElement) {
+function Reset_MonsterImages(RowElement) {
 	var MonsterImageContainer = $('.monsters-cards');
 	MonsterImageContainer.find('img').remove()
 }
@@ -191,19 +195,25 @@ function Reset_MonterImages(RowElement) {
 //lieutenants zone
 function CreateZone_Lieutenants() {
 	var html = $('<div>');
-	var container = $('<div>').addClass('lieutenants-container');
+	var container = $('<div>').addClass('lieutenant-container');
 	container.append('<h1>Lieutenants</h1>');
+	// non global -> line by line
+	//container.append('<div class="lieutenants-cards"></div>');
+	//container.append('<div class="lieutenants-relicscards"></div>');
+	//container.append('<div class="lieutenants-tokenscards"></div>');
 	html.append(container);
 	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="AddLine_Lieutenant();">Add lieutenant</button>');
 	//initialize LineClass
 	lieutenantLine.NameListValues = Create_LieutenantListValues();
+	//lieutenantLine.RelicCommonImageContainer = "lieutenants-relicscards";
+	//lieutenantLine.TokenCommonImageContainer = "lieutenants-tokenscards";
 
 	return html;
 }
 
 function GetZone_Lieutenants(DataToUpdate) {
 	var result = [];
-	var lieutenants = $('.lieutenants-container .select-row');
+	var lieutenants = $('.lieutenant-container .select-row');
 	for (var i = 0; i < lieutenants.length; i++) {
 		var container = $(lieutenants[i]);
 		var lieutenant = {};
@@ -220,45 +230,80 @@ function FillZone_Lieutenants(NewData, FromPreFilledMaps) {
 		for (var i = 0 ; i < NewData.lieutenants.length; i++) {
 			lieutenantLine.XYBase = "1x1";
 			var html = lieutenantLine.AddOneLineWithData(NewData.lieutenants[i]);
-			$('.lieutenants-container').append(html);
+			Update_LieutenantImages(html);
+			$('.lieutenant-container').append(html);
 		}
 	}
 }
 
 function ResetZone_Lieutenants(FromPreFilledMaps) {
-	$('.lieutenants-container .select-row').remove();
+	$('.lieutenant-container .select-row').remove();
 }
 
 function AddLine_Lieutenant() {
 	lieutenantLine.XYBase = "1x1";
 	var html = lieutenantLine.AddOneEmptyLine();
-	$('.lieutenants-container').append(html);
+	$('.lieutenant-container').append(html);
 	return html;
+}
+
+function RemoveLine_Lieutenant(Button) {
 }
 
 function Create_LieutenantListValues() {
 	var html = addOption('Clear', '', 'UnSet_Lieutenant(this);');
-	for (var i = 0; i < DOORS_LIST.length; i++) {
-		html += addOption(DOORS_LIST[i] + ' ', '', 'Set_Lieutenant(this, \'' + DOORS_LIST[i] + '\')');
+	for (var i = 0; i < LIEUTENANTS_LIST.length; i++) {
+		var lieutenantTitle = LIEUTENANTS_LIST[i][0];
+		html += addOption(lieutenantTitle + ' ', '', 'Set_Lieutenant(this, \'' + lieutenantTitle + '\')');
 	}
 	return html;
 }
 
 function Set_Lieutenant(element, value) {
-	lieutenantLine.XYBase = "1x1";
 	var container = $(element).parents('.select-row');
+	lieutenantLine.XYBase = LIEUTENANTS[value].width + 'x' + LIEUTENANTS[value].height;
 	lieutenantLine.Set_MainElement(container, value);
+	Update_LieutenantImages(container);
 }
 
 function UnSet_Lieutenant(element) {
 	var container = $(element).parents('.select-row');
 	lieutenantLine.UnSet_MainElement(container);
+	Update_LieutenantImages(container);
 }
+
+function Update_LieutenantImages(RowElement) {
+	var LieutenantImageContainer = RowElement.find('.Row-cards');
+	Reset_LieutenantImages(RowElement);
+	var actAddition = (CurrentAct == "I") ? '_act1' : '_act2';
+
+	var OneLieutenantValue = RowElement.find('.MainElement-Value').val();
+	if (OneLieutenantValue == undefined || OneLieutenantValue == '') return;
+
+	if (LieutenantImageContainer.find('.' + urlize(OneLieutenantValue)).length == 0)
+	{
+		var LieutenantImage = $('<img>');
+		LieutenantImage.attr('src', 'images/lieutenant_cards/' + urlize(OneLieutenantValue) + actAddition + '.png').addClass('lieutenant').addClass(urlize(OneLieutenantValue));
+		LieutenantImageContainer.append(LieutenantImage);
+		if (LIEUTENANTS[OneLieutenantValue].hasBack) {
+			var LieutenantCardBack = $('<img>');
+			LieutenantCardBack.attr('src', 'images/lieutenant_cards/' + urlize(OneLieutenantValue) + actAddition + '_back' + '.png');
+			LieutenantImageContainer.append(LieutenantCardBack);
+		}
+	}
+
+}
+
+function Reset_LieutenantImages(RowElement) {
+	var LieutenantImageContainer = RowElement.find('.Row-cards');
+	LieutenantImageContainer.find('img').remove();
+}
+
 
 //agents zone
 function CreateZone_Agents() {
 	var html = $('<div>');
-	var container = $('<div>').addClass('agents-container');
+	var container = $('<div>').addClass('agent-container');
 	container.append('<h1>Agents</h1>');
 	html.append(container);
 	html.append('<button type="button" class="btn btn-success" aria-expanded="false" onclick="AddLine_Agent();">Add agent</button>');
@@ -270,7 +315,7 @@ function CreateZone_Agents() {
 
 function GetZone_Agents(DataToUpdate) {
 	var result = [];
-	var agents = $('.agents-container .select-row');
+	var agents = $('.agent-container .select-row');
 	for (var i = 0; i < agents.length; i++) {
 		var container = $(agents[i]);
 		var agent = {};
@@ -287,39 +332,72 @@ function FillZone_Agents(NewData, FromPreFilledMaps) {
 		for (var i = 0 ; i < NewData.agents.length; i++) {
 			agentLine.XYBase = "1x1";
 			var html = agentLine.AddOneLineWithData(NewData.agents[i]);
-			$('.agents-container').append(html);
+			$('.agent-container').append(html);
 		}
 	}
 }
 
 function ResetZone_Agents(FromPreFilledMaps) {
-	$('.agents-container .select-row').remove();
+	$('.agent-container .select-row').remove();
 }
 
 function AddLine_Agent() {
 	agentLine.XYBase = "1x1";
 	var html = agentLine.AddOneEmptyLine();
-	$('.agents-container').append(html);
+	$('.agent-container').append(html);
 	return html;
+}
+
+function RemoveLine_Agent(Button) {
 }
 
 function Create_AgentListValues() {
 	var html = addOption('Clear', '', 'UnSet_Agent(this);');
-	for (var i = 0; i < DOORS_LIST.length; i++) {
-		html += addOption(DOORS_LIST[i] + ' ', '', 'Set_Agent(this, \'' + DOORS_LIST[i] + '\')');
+	for (var i = 0; i < LIEUTENANTS_LIST.length; i++) {
+		var agentTitle = LIEUTENANTS_LIST[i][0];
+		html += addOption('Agent ' + agentTitle + ' ', '', 'Set_Agent(this, \'' + agentTitle + '\')');
 	}
 	return html;
 }
 
 function Set_Agent(element, value) {
-	agentLine.XYBase = "1x1";
 	var container = $(element).parents('.select-row');
+	agentLine.XYBase = LIEUTENANTS[value].width + 'x' + LIEUTENANTS[value].height;
 	agentLine.Set_MainElement(container, value);
+	Update_AgentImages(container);
 }
 
 function UnSet_Agent(element) {
 	var container = $(element).parents('.select-row');
 	agentLine.UnSet_MainElement(container);
+	Update_AgentImages(container);
+}
+
+function Update_AgentImages(RowElement) {
+	var AgentImageContainer = RowElement.find('.Row-cards');
+	Reset_AgentImages(RowElement);
+	var actAddition = (CurrentAct == "I") ? '_act1' : '_act2';
+
+	var OneAgentValue = RowElement.find('.MainElement-Value').val();
+	if (OneAgentValue == undefined || OneAgentValue == '') return;
+
+	if (AgentImageContainer.find('.' + urlize(OneAgentValue)).length == 0)
+	{
+		var AgentImage = $('<img>');
+		AgentImage.attr('src', 'images/plot_cards/agents/' + urlize(OneAgentValue) + actAddition + '.png').addClass('agent').addClass(urlize(OneAgentValue));
+		AgentImageContainer.append(AgentImage);
+		if (LIEUTENANTS[OneAgentValue].hasBack) {
+			var AgentCardBack = $('<img>');
+			AgentCardBack.attr('src', 'images/plot_cards/agents/' + urlize(OneAgentValue) + actAddition + '_back' + '.png');
+			AgentImageContainer.append(AgentCardBack);
+		}
+	}
+
+}
+
+function Reset_AgentImages(RowElement) {
+	var AgentImageContainer = RowElement.find('.Row-cards');
+	AgentImageContainer.find('img').remove();
 }
 
 
@@ -361,7 +439,7 @@ function FillZone_MonsterTraits(NewData, FromPreFilledMaps) {
 }
 
 function ResetZone_MonsterTraits(FromPreFilledMaps) {
-	//$('.agents-container .select-row').remove();
+	//$('.agent-container .select-row').remove();
 }
 
 function Set_MonsterTrait(element, value) {
