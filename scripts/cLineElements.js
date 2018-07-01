@@ -131,7 +131,10 @@ function LineClass(elementName, elementID, RemoveCallBack) {
 				Set_Relics(lineHTMLwithData, NewData.relics);
 			}
 			if (this.needAddAuraButton == true) {
-				Set_Auras(lineHTMLwithData, NewData.auras);
+				//for compatibility with old versions
+				if (NewData.auras != undefined) {
+					Set_Auras(lineHTMLwithData, NewData.auras);
+				}
 			}
 			if (this.needRemoveButton == true) {
 			}
