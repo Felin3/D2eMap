@@ -281,8 +281,7 @@ function rebuildMap(element, mapNb) {
 	FillWindow_QuestObjectives(config, true);
 	FillWindow_MapDesign(config, true);
 	FillWindow_OLFigures(config, true);
-	//updateTraitsFromConfig()
-	//constructMonstersAndLieutenantsTabFromConfig();
+
 	constructAlliesTabFromConfig();
 	constructVillagersTabFromConfig();
 	if (mapConfig.objectives != undefined) {
@@ -846,13 +845,11 @@ function adjustOverlappingImages() {
 
 function constructSettingsFromConfig() {
 	updateAct(config.currentAct);
-//	updateExt(config.currentAct);
-//	updateTraitsAndExpansionsFromConfig();
 	FillWindow_QuestObjectives(config, false);
 	FillWindow_MapDesign(config, false);
 	FillWindow_OLFigures(config, false);
+
 	constructHeroesTabsFromConfig();
-//	constructMonstersAndLieutenantsTabFromConfig();
 	constructAlliesAndFamiliarsTabFromConfig();
 	constructMiscellaneousObjectsTabFromConfig();
 	constructOverlordCardsTabFromConfig();

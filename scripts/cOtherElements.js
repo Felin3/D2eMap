@@ -63,7 +63,7 @@ function Create_ExpansionList()
 		for (var i = 0; i < expansionList.length; i++) {
 			var expansion = expansionList[i];
 			var expansionObject = $('<div>').addClass('checkbox');
-			var expansionInput = $('<input type="checkbox" name="' + folderize(expansion) + '" onClick="Set_Expansion(this, \'' + folderize(expansion) + '\');" />');
+			var expansionInput = $('<input type="checkbox" class="Expansions-Value" name="' + folderize(expansion) + '" onClick="Set_Expansion(this, \'' + folderize(expansion) + '\');" />');
 			expansionInput.prop('checked', true);
 			expansionObject.append($('<label> ' + expansion + '</label>').prepend(expansionInput));
 			GroupHTML.append(expansionObject);
@@ -74,25 +74,34 @@ function Create_ExpansionList()
 }
 
 function Set_Expansion(element, value) {
-	var container = $(element).parents('.select-row');
+	if ($(element).hasClass('expansions')) {
+		$('[name="' + urlize(value) + '"]').prop('checked',true);
+	}
 	//Data Linked
 	updateMonstersVisibility();
 }
 
+function GetZone_Expansions(DataToUpdate) {
+	var result = {};
+	var SelectedExpansions = $('.Expansions-Value:checkbox:checked')
+	for (var i = 0; i < SelectedExpansions.length; i++) {
+		var checkedExpansion = $(SelectedExpansions[i]).attr('name');
+		result[checkedExpansion] = checkedExpansion;
+	}
+	DataToUpdate.expansions = result;
+	return DataToUpdate;
+}
 
-
-
-function updateExpansionsFromConfig() {
-	if (config.expansions != undefined) {
-		selectedExpansions = config.expansions;
-		updateExpansions();
+function FillZone_Expansions(NewData, FromPreFilledMaps) {
+	ResetZone_Expansions(FromPreFilledMaps);
+	if (NewData.expansions != undefined) {
+		for (var oneExpansion in NewData.expansions) {
+			Set_Expansion($('.expansions'), oneExpansion);
+		}
 	}
 }
 
-function updateExpansions() {
-	$('#expansions input').prop('checked',false);
-	for (var selectedExpansion in selectedExpansions) {
-		if (selectedExpansions[selectedExpansion] == undefined) continue;
-		$('[name="' + urlize(selectedExpansion) + '"]').prop('checked',true);
-	}
+function ResetZone_Expansions(FromPreFilledMaps) {
+	$('.Expansions-Value').prop('checked',false);
 }
+

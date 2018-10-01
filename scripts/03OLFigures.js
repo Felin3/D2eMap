@@ -39,6 +39,7 @@ function GetWindow_OLFigures(DataToUpdate) {
 	DataToUpdate = GetZone_Lieutenants(DataToUpdate);
 	DataToUpdate = GetZone_Agents(DataToUpdate);
 	DataToUpdate = GetZone_MonsterTraits(DataToUpdate);
+	DataToUpdate = GetZone_Expansions(DataToUpdate);
 	return DataToUpdate;
 }
 
@@ -48,6 +49,7 @@ function FillWindow_OLFigures(NewData, FromPreFilledMaps) {
 	FillZone_Lieutenants(NewData, FromPreFilledMaps);
 	FillZone_Agents(NewData, FromPreFilledMaps);
 	FillZone_MonsterTraits(NewData, FromPreFilledMaps);
+	FillZone_Expansions(NewData, FromPreFilledMaps);
 }
 
 function ResetWindow_OLFigures(FromPreFilledMaps) {
@@ -55,6 +57,7 @@ function ResetWindow_OLFigures(FromPreFilledMaps) {
 	ResetZone_Lieutenants(FromPreFilledMaps);
 	ResetZone_Agents(FromPreFilledMaps);
 	ResetZone_MonsterTraits(FromPreFilledMaps);
+	ResetZone_Expansions(FromPreFilledMaps);
 }
 
 //monsters zone
@@ -425,10 +428,10 @@ function Create_MonsterTraitsList()
 }
 
 function GetZone_MonsterTraits(DataToUpdate) {
-	var result = [];
-	var SelecttedMonsterTraits = $('.MonstrerTraits-Value:checkbox:checked')
-	for (var i = 0; i < SelecttedMonsterTraits.length; i++) {
-		var checkedTrait = $(SelecttedMonsterTraits[i]).attr('name');
+	var result = {};
+	var SelectedMonsterTraits = $('.MonstrerTraits-Value:checkbox:checked')
+	for (var i = 0; i < SelectedMonsterTraits.length; i++) {
+		var checkedTrait = $(SelectedMonsterTraits[i]).attr('name');
 		result[checkedTrait] = checkedTrait;
 	}
 	DataToUpdate.monsterTraits = result;
@@ -438,18 +441,20 @@ function GetZone_MonsterTraits(DataToUpdate) {
 function FillZone_MonsterTraits(NewData, FromPreFilledMaps) {
 	ResetZone_MonsterTraits(FromPreFilledMaps);
 	if (NewData.monsterTraits != undefined) {
-		for (var i = 0 ; i < NewData.monsterTraits.length; i++) {
-			Set_MonsterTrait($('.monster-traits'), NewData.monsterTraits[i]);
+		for (var oneMonsterTrait in NewData.monsterTraits) {
+			Set_MonsterTrait($('.monster-traits'), oneMonsterTrait);
 		}
 	}
 }
 
 function ResetZone_MonsterTraits(FromPreFilledMaps) {
-	//$('.agent-container .select-row').remove();
+	$('.MonstrerTraits-Value').prop('checked',false);
 }
 
 function Set_MonsterTrait(element, value) {
-	//$('[name="' + urlize(value) + '"]').prop('checked',true);
+	if ($(element).hasClass('monster-traits')) {
+		$('[name="' + urlize(value) + '"]').prop('checked',true);
+	}
 	//Data Linked
 	updateMonstersVisibility();
 }
