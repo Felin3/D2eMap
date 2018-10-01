@@ -474,7 +474,8 @@ function Set_Token(element, value) {
 	var id = TokenContainer.attr('id');
 	$(TokenContainer).parents('.tokens-container').find('.Token' + id).attr('value',value);
 	TokenContainer.find('.Token-Title').html(value + ' ');
-	Add_TokenImage($(TokenContainer).parents('.select-row'), value);
+	//Add_TokenImage($(TokenContainer).parents('.select-row'), value);
+	Update_TokenImages($(TokenContainer).parents('.select-row'));
 	//if (container.parents('#monsters').length > 0) {
 	//	adjustMonsterList();
 	//} else {
@@ -489,6 +490,7 @@ function Set_Tokens(RowElement, ConfigData) {
 		OneTokenItem = Add_OneEmptyToken(Button);
 		Set_Token(OneTokenItem, OneToken);
 	}
+	Update_TokenImages(RowElement);
 }
 
 function Reset_TokenImages(RowElement) {
@@ -609,7 +611,8 @@ function Set_Relic(element, value) {
 	var id = RelicContainer.attr('id');
 	$(RelicContainer).parents('.relics-container').find('.Relic' + id).attr('value',value);
 	RelicContainer.find('.Relic-Title').html(value + ' ');
-	Add_RelicImage($(RelicContainer).parents('.select-row'), value);
+	//Add_RelicImage($(RelicContainer).parents('.select-row'), value);
+	Update_RelicImages($(RelicContainer).parents('.select-row'));
 }
 
 function Set_Relics(RowElement, ConfigData) {
@@ -618,6 +621,7 @@ function Set_Relics(RowElement, ConfigData) {
 		OneRelicItem = Add_OneEmptyRelic(Button);
 		Set_Relic(OneRelicItem, OneRelic);
 	}
+	Update_RelicImages(RowElement);
 }
 
 function Reset_RelicImages(RowElement) {
@@ -633,7 +637,7 @@ function Reset_RelicImages(RowElement) {
 }
 
 function Add_RelicImage(RowElement, NewValue) {
-	var RelicImageContainer = $('.'+ContainerName);
+	var RelicImageContainer;
 	var ContainerName = RowElement.find('input[name="RelicImageContainer"]').val();
 	if (ContainerName == "") {
 		RelicImageContainer = $(RowElement.find('.Row-relicscards'));
@@ -652,7 +656,7 @@ function Add_RelicImage(RowElement, NewValue) {
 }
 
 function Update_RelicImages(RowElement) {
-	var RelicImageContainer = $('.'+ContainerName);
+	var RelicImageContainer;
 	RowElement = $(RowElement);
 	var ContainerName = RowElement.find('input[name="RelicImageContainer"]').val();
 	var RelicList;

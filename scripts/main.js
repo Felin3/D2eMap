@@ -275,7 +275,7 @@ function rebuildMap(element, mapNb) {
 
 	clearAllies();
 	clearVillagers();
-	clearLieutenants();
+//	clearLieutenants();
 
 	updateAct(config.currentAct);
 	FillWindow_QuestObjectives(config, true);
@@ -952,14 +952,14 @@ function collectData() {
 	config = GetWindow_OLFigures(config);
 /*
 
-	config.lieutenants = getLieutenants();
-	config.agents = getAgents();
-	config.monsterTraits = monsterTraits;
-	var monsterRows = $('#monsters-container .select-row');
-	config.monsters = [];
-	for (var i = 0; i < monsterRows.length; i++) {
-		config.monsters.push(monster(monsterRows[i]));
-	}
+	//config.lieutenants = getLieutenants();
+	//config.agents = getAgents();
+	//config.monsterTraits = monsterTraits;
+	//var monsterRows = $('#monsters-container .select-row');
+	//config.monsters = [];
+	//for (var i = 0; i < monsterRows.length; i++) {
+	//	config.monsters.push(monster(monsterRows[i]));
+	//}
 */
 	config.hero1 = hero($('#hero1 .select-row'));
 	config.hero2 = hero($('#hero2 .select-row'));
@@ -1023,11 +1023,11 @@ function clearAdditionalElements() {
 	ResetWindow_MapDesign();
 	ResetWindow_OLFigures();
 
+//	clearLieutenants();
+//	clearAgents();
 	clearMiscellaneousObjectsTab();
 	clearHeroesSackAndSearchItems();
 	clearHeroesConditions();
-	clearLieutenants();
-	clearAgents();
 	clearFamiliarsAndAllies();
 }
 

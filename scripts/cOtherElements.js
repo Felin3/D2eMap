@@ -76,7 +76,7 @@ function Create_ExpansionList()
 function Set_Expansion(element, value) {
 	var container = $(element).parents('.select-row');
 	//Data Linked
-	adjustMonsterList();
+	updateMonstersVisibility();
 }
 
 
