@@ -260,8 +260,18 @@ function recoverConfig(Base64Data) {
 	return dataTemp;
 }
 
+function RetroCompatibility(mapConfig) {
+	//update Recovered config based on Version
+	//if (mapConfig.mapVersion == "")
+	//...
+}
+
 function rebuildMap(element, mapNb) {
 	var mapConfig = recoverConfig(MAP_HASES_LIST[mapNb][3]);
+
+	RetroCompatibility(mapConfig);
+
+
 	config.tiles = mapConfig.tiles;
 	config.doors = mapConfig.doors;
 	config.xs = mapConfig.xs;
