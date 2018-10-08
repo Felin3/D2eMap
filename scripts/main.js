@@ -942,6 +942,7 @@ function updateConfig() {
 }
 
 function collectData() {
+	config.mapVersion = MAPVERSION;
 	config.currentAct = CurrentAct;
 	config.expansions = selectedExpansions;
 	config = GetWindow_QuestObjectives(config);
