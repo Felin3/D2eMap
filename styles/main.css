@@ -709,7 +709,7 @@ ul#tabs > li > a {
 	display: inline-block;
 }
 
-.relic {
+img.relic {
 	height: 300px;
 }
 .select-row .relic {
